@@ -1,0 +1,516 @@
+{
+    "schema_id": "https://www.joanneum.at/jim/camera_image.schema.json",
+    "schema_version": 7412,
+    "product_type": "mosaic",
+    "image_width": 27500,
+    "image_height": 10000,
+    "channels": 3,
+    "data_type": "float",
+    "file_md5": "3430f0842e36943aa65cdd14f21b63c2",
+    "image_file_format": "tif",
+    "compression_type": "lzw",
+    "map_transformation": [
+        80,
+        0.005902016647650787,
+        0.0,
+        110,
+        0.0,
+        0.005910069922374216
+    ],
+    "is_map_raster": true,
+    "no_data_value": -99999.0,
+    "geometry_information": {
+        "geometry_type": "spherical",
+        "sphere_axis": [
+            0.0,
+            0.0,
+            1.0
+        ],
+        "sphere_center": [
+            188.12005342843,
+            16.581446090575,
+            -2.4336039157339
+        ]
+    },
+    "image_statistics": [
+        {
+            "minimum": 0.002422521123662591,
+            "maximum": 0.03690836951136589,
+            "mean": 0.019781663011191247,
+            "median": 0.018305481747754572,
+            "standard_deviation": 0.005104533535396067,
+            "variance": 2.6056262613983073e-05
+        },
+        {
+            "minimum": 0.0013420849572867155,
+            "maximum": 0.025435253977775574,
+            "mean": 0.014140989245441781,
+            "median": 0.013013363107018852,
+            "standard_deviation": 0.0039062341046171302,
+            "variance": 1.5258664880073993e-05
+        },
+        {
+            "minimum": 0.0009191935532726347,
+            "maximum": 0.021901864558458328,
+            "mean": 0.009375541790789144,
+            "median": 0.008651344352181874,
+            "standard_deviation": 0.0027068116475193653,
+            "variance": 7.326829295146501e-06
+        }
+    ],
+    "start_datetime": "2022-02-23T18:24:44.206000+0000",
+    "stop_datetime": "2022-02-23T18:31:37.208000+0000",
+    "rover_motion_counter": [],
+    "product_information": {
+        "schema_id": "https://www.joanneum.at/jim/product_information.schema.json",
+        "schema_version": 7262,
+        "product_type": "mosaic",
+        "product_state": "initial",
+        "creator_id": "13_PanoramaStitching",
+        "creation_datetime": "2025-04-29T22:33:29.427032+0000",
+        "product_format": "float"
+    },
+    "input_products": [
+        {
+            "metadata_file": "products/camera_image/distortion_corrected/ZL0_0360_0698912216_928RAD_N0101114ZCAM08390_0790LMA03.tif.json",
+            "product_information": {
+                "schema_id": "https://www.joanneum.at/jim/product_information.schema.json",
+                "schema_version": 7262,
+                "product_type": "camera_image",
+                "product_state": "distortion_corrected",
+                "creator_id": "07_CorrectDistortion",
+                "creation_datetime": "2025-04-29T22:28:46.895608+0000"
+            }
+        },
+        {
+            "metadata_file": "products/camera_image/distortion_corrected/ZL0_0360_0698912342_928RAD_N0101114ZCAM08390_0790LMA02.tif.json",
+            "product_information": {
+                "schema_id": "https://www.joanneum.at/jim/product_information.schema.json",
+                "schema_version": 7262,
+                "product_type": "camera_image",
+                "product_state": "distortion_corrected",
+                "creator_id": "07_CorrectDistortion",
+                "creation_datetime": "2025-04-29T22:28:49.657210+0000"
+            }
+        },
+        {
+            "metadata_file": "products/camera_image/distortion_corrected/ZL0_0360_0698912375_928RAD_N0101114ZCAM08390_0790LMA02.tif.json",
+            "product_information": {
+                "schema_id": "https://www.joanneum.at/jim/product_information.schema.json",
+                "schema_version": 7262,
+                "product_type": "camera_image",
+                "product_state": "distortion_corrected",
+                "creator_id": "07_CorrectDistortion",
+                "creation_datetime": "2025-04-29T22:28:52.638907+0000"
+            }
+        },
+        {
+            "metadata_file": "products/camera_image/distortion_corrected/ZL0_0360_0698912407_928RAD_N0101114ZCAM08390_0790LMA02.tif.json",
+            "product_information": {
+                "schema_id": "https://www.joanneum.at/jim/product_information.schema.json",
+                "schema_version": 7262,
+                "product_type": "camera_image",
+                "product_state": "distortion_corrected",
+                "creator_id": "07_CorrectDistortion",
+                "creation_datetime": "2025-04-29T22:28:55.301782+0000"
+            }
+        },
+        {
+            "metadata_file": "products/camera_image/distortion_corrected/ZL0_0360_0698912439_928RAD_N0101114ZCAM08390_0790LMA02.tif.json",
+            "product_information": {
+                "schema_id": "https://www.joanneum.at/jim/product_information.schema.json",
+                "schema_version": 7262,
+                "product_type": "camera_image",
+                "product_state": "distortion_corrected",
+                "creator_id": "07_CorrectDistortion",
+                "creation_datetime": "2025-04-29T22:28:58.344632+0000"
+            }
+        },
+        {
+            "metadata_file": "products/camera_image/distortion_corrected/ZL0_0360_0698912471_928RAD_N0101114ZCAM08390_0790LMA02.tif.json",
+            "product_information": {
+                "schema_id": "https://www.joanneum.at/jim/product_information.schema.json",
+                "schema_version": 7262,
+                "product_type": "camera_image",
+                "product_state": "distortion_corrected",
+                "creator_id": "07_CorrectDistortion",
+                "creation_datetime": "2025-04-29T22:29:01.040917+0000"
+            }
+        },
+        {
+            "metadata_file": "products/camera_image/distortion_corrected/ZL0_0360_0698912488_928RAD_N0101114ZCAM08390_0790LMA02.tif.json",
+            "product_information": {
+                "schema_id": "https://www.joanneum.at/jim/product_information.schema.json",
+                "schema_version": 7262,
+                "product_type": "camera_image",
+                "product_state": "distortion_corrected",
+                "creator_id": "07_CorrectDistortion",
+                "creation_datetime": "2025-04-29T22:29:04.063873+0000"
+            }
+        },
+        {
+            "metadata_file": "products/camera_image/distortion_corrected/ZL0_0360_0698912502_928RAD_N0101114ZCAM08390_0790LMA02.tif.json",
+            "product_information": {
+                "schema_id": "https://www.joanneum.at/jim/product_information.schema.json",
+                "schema_version": 7262,
+                "product_type": "camera_image",
+                "product_state": "distortion_corrected",
+                "creator_id": "07_CorrectDistortion",
+                "creation_datetime": "2025-04-29T22:29:06.856036+0000"
+            }
+        },
+        {
+            "metadata_file": "products/camera_image/distortion_corrected/ZL0_0360_0698912532_928RAD_N0101114ZCAM08390_0790LMA02.tif.json",
+            "product_information": {
+                "schema_id": "https://www.joanneum.at/jim/product_information.schema.json",
+                "schema_version": 7262,
+                "product_type": "camera_image",
+                "product_state": "distortion_corrected",
+                "creator_id": "07_CorrectDistortion",
+                "creation_datetime": "2025-04-29T22:29:09.825027+0000"
+            }
+        },
+        {
+            "metadata_file": "products/camera_image/distortion_corrected/ZL0_0360_0698912554_928RAD_N0101114ZCAM08390_0790LMA02.tif.json",
+            "product_information": {
+                "schema_id": "https://www.joanneum.at/jim/product_information.schema.json",
+                "schema_version": 7262,
+                "product_type": "camera_image",
+                "product_state": "distortion_corrected",
+                "creator_id": "07_CorrectDistortion",
+                "creation_datetime": "2025-04-29T22:29:12.470947+0000"
+            }
+        },
+        {
+            "metadata_file": "products/camera_image/distortion_corrected/ZL0_0360_0698912567_928RAD_N0101114ZCAM08390_0790LMA02.tif.json",
+            "product_information": {
+                "schema_id": "https://www.joanneum.at/jim/product_information.schema.json",
+                "schema_version": 7262,
+                "product_type": "camera_image",
+                "product_state": "distortion_corrected",
+                "creator_id": "07_CorrectDistortion",
+                "creation_datetime": "2025-04-29T22:29:15.452053+0000"
+            }
+        },
+        {
+            "metadata_file": "products/camera_image/distortion_corrected/ZL0_0360_0698912596_928RAD_N0101114ZCAM08390_0790LMA02.tif.json",
+            "product_information": {
+                "schema_id": "https://www.joanneum.at/jim/product_information.schema.json",
+                "schema_version": 7262,
+                "product_type": "camera_image",
+                "product_state": "distortion_corrected",
+                "creator_id": "07_CorrectDistortion",
+                "creation_datetime": "2025-04-29T22:29:18.316395+0000"
+            }
+        },
+        {
+            "metadata_file": "products/camera_image/distortion_corrected/ZL0_0360_0698912613_928RAD_N0101114ZCAM08390_0790LMA02.tif.json",
+            "product_information": {
+                "schema_id": "https://www.joanneum.at/jim/product_information.schema.json",
+                "schema_version": 7262,
+                "product_type": "camera_image",
+                "product_state": "distortion_corrected",
+                "creator_id": "07_CorrectDistortion",
+                "creation_datetime": "2025-04-29T22:29:21.614561+0000"
+            }
+        },
+        {
+            "metadata_file": "products/camera_image/distortion_corrected/ZL0_0360_0698912626_928RAD_N0101114ZCAM08390_0790LMA02.tif.json",
+            "product_information": {
+                "schema_id": "https://www.joanneum.at/jim/product_information.schema.json",
+                "schema_version": 7262,
+                "product_type": "camera_image",
+                "product_state": "distortion_corrected",
+                "creator_id": "07_CorrectDistortion",
+                "creation_datetime": "2025-04-29T22:29:24.487881+0000"
+            }
+        },
+        {
+            "metadata_file": "products/camera_image/distortion_corrected/ZL0_0360_0698912654_928RAD_N0101114ZCAM08390_0790LMA02.tif.json",
+            "product_information": {
+                "schema_id": "https://www.joanneum.at/jim/product_information.schema.json",
+                "schema_version": 7262,
+                "product_type": "camera_image",
+                "product_state": "distortion_corrected",
+                "creator_id": "07_CorrectDistortion",
+                "creation_datetime": "2025-04-29T22:29:27.577605+0000"
+            }
+        },
+        {
+            "metadata_file": "products/camera_image/distortion_corrected/ZL0_0360_0698912671_928RAD_N0101114ZCAM08390_0790LMA02.tif.json",
+            "product_information": {
+                "schema_id": "https://www.joanneum.at/jim/product_information.schema.json",
+                "schema_version": 7262,
+                "product_type": "camera_image",
+                "product_state": "distortion_corrected",
+                "creator_id": "07_CorrectDistortion",
+                "creation_datetime": "2025-04-29T22:29:30.308291+0000"
+            }
+        },
+        {
+            "metadata_file": "products/camera_image/distortion_corrected/ZL0_0360_0698912684_928RAD_N0101114ZCAM08390_0790LMA02.tif.json",
+            "product_information": {
+                "schema_id": "https://www.joanneum.at/jim/product_information.schema.json",
+                "schema_version": 7262,
+                "product_type": "camera_image",
+                "product_state": "distortion_corrected",
+                "creator_id": "07_CorrectDistortion",
+                "creation_datetime": "2025-04-29T22:29:33.426328+0000"
+            }
+        },
+        {
+            "metadata_file": "products/camera_image/distortion_corrected/ZL0_0360_0698912712_928RAD_N0101114ZCAM08390_0790LMA02.tif.json",
+            "product_information": {
+                "schema_id": "https://www.joanneum.at/jim/product_information.schema.json",
+                "schema_version": 7262,
+                "product_type": "camera_image",
+                "product_state": "distortion_corrected",
+                "creator_id": "07_CorrectDistortion",
+                "creation_datetime": "2025-04-29T22:29:36.088208+0000"
+            }
+        },
+        {
+            "metadata_file": "products/camera_image/distortion_corrected/ZL0_0360_0698912729_928RAD_N0101114ZCAM08390_0790LMA02.tif.json",
+            "product_information": {
+                "schema_id": "https://www.joanneum.at/jim/product_information.schema.json",
+                "schema_version": 7262,
+                "product_type": "camera_image",
+                "product_state": "distortion_corrected",
+                "creator_id": "07_CorrectDistortion",
+                "creation_datetime": "2025-04-29T22:29:39.046306+0000"
+            }
+        },
+        {
+            "metadata_file": "products/camera_image/distortion_corrected/ZL0_0360_0698912742_928RAD_N0101114ZCAM08390_0790LMA02.tif.json",
+            "product_information": {
+                "schema_id": "https://www.joanneum.at/jim/product_information.schema.json",
+                "schema_version": 7262,
+                "product_type": "camera_image",
+                "product_state": "distortion_corrected",
+                "creator_id": "07_CorrectDistortion",
+                "creation_datetime": "2025-04-29T22:29:41.648337+0000"
+            }
+        },
+        {
+            "metadata_file": "products/camera_cal/transformed/ZL0_0360_0698912216_928RAD_N0101114ZCAM08390_0790LMA03.cal.json",
+            "product_information": {
+                "schema_id": "https://www.joanneum.at/jim/product_information.schema.json",
+                "schema_version": 7262,
+                "product_type": "camera_cal",
+                "product_state": "transformed",
+                "creator_id": "TransformCal",
+                "creation_datetime": "2025-04-29T22:32:08.072033+0000"
+            }
+        },
+        {
+            "metadata_file": "products/camera_cal/transformed/ZL0_0360_0698912342_928RAD_N0101114ZCAM08390_0790LMA02.cal.json",
+            "product_information": {
+                "schema_id": "https://www.joanneum.at/jim/product_information.schema.json",
+                "schema_version": 7262,
+                "product_type": "camera_cal",
+                "product_state": "transformed",
+                "creator_id": "TransformCal",
+                "creation_datetime": "2025-04-29T22:32:08.079014+0000"
+            }
+        },
+        {
+            "metadata_file": "products/camera_cal/transformed/ZL0_0360_0698912375_928RAD_N0101114ZCAM08390_0790LMA02.cal.json",
+            "product_information": {
+                "schema_id": "https://www.joanneum.at/jim/product_information.schema.json",
+                "schema_version": 7262,
+                "product_type": "camera_cal",
+                "product_state": "transformed",
+                "creator_id": "TransformCal",
+                "creation_datetime": "2025-04-29T22:32:08.085996+0000"
+            }
+        },
+        {
+            "metadata_file": "products/camera_cal/transformed/ZL0_0360_0698912407_928RAD_N0101114ZCAM08390_0790LMA02.cal.json",
+            "product_information": {
+                "schema_id": "https://www.joanneum.at/jim/product_information.schema.json",
+                "schema_version": 7262,
+                "product_type": "camera_cal",
+                "product_state": "transformed",
+                "creator_id": "TransformCal",
+                "creation_datetime": "2025-04-29T22:32:08.091980+0000"
+            }
+        },
+        {
+            "metadata_file": "products/camera_cal/transformed/ZL0_0360_0698912439_928RAD_N0101114ZCAM08390_0790LMA02.cal.json",
+            "product_information": {
+                "schema_id": "https://www.joanneum.at/jim/product_information.schema.json",
+                "schema_version": 7262,
+                "product_type": "camera_cal",
+                "product_state": "transformed",
+                "creator_id": "TransformCal",
+                "creation_datetime": "2025-04-29T22:32:08.100956+0000"
+            }
+        },
+        {
+            "metadata_file": "products/camera_cal/transformed/ZL0_0360_0698912471_928RAD_N0101114ZCAM08390_0790LMA02.cal.json",
+            "product_information": {
+                "schema_id": "https://www.joanneum.at/jim/product_information.schema.json",
+                "schema_version": 7262,
+                "product_type": "camera_cal",
+                "product_state": "transformed",
+                "creator_id": "TransformCal",
+                "creation_datetime": "2025-04-29T22:32:08.106940+0000"
+            }
+        },
+        {
+            "metadata_file": "products/camera_cal/transformed/ZL0_0360_0698912488_928RAD_N0101114ZCAM08390_0790LMA02.cal.json",
+            "product_information": {
+                "schema_id": "https://www.joanneum.at/jim/product_information.schema.json",
+                "schema_version": 7262,
+                "product_type": "camera_cal",
+                "product_state": "transformed",
+                "creator_id": "TransformCal",
+                "creation_datetime": "2025-04-29T22:32:08.112924+0000"
+            }
+        },
+        {
+            "metadata_file": "products/camera_cal/transformed/ZL0_0360_0698912502_928RAD_N0101114ZCAM08390_0790LMA02.cal.json",
+            "product_information": {
+                "schema_id": "https://www.joanneum.at/jim/product_information.schema.json",
+                "schema_version": 7262,
+                "product_type": "camera_cal",
+                "product_state": "transformed",
+                "creator_id": "TransformCal",
+                "creation_datetime": "2025-04-29T22:32:08.119905+0000"
+            }
+        },
+        {
+            "metadata_file": "products/camera_cal/transformed/ZL0_0360_0698912532_928RAD_N0101114ZCAM08390_0790LMA02.cal.json",
+            "product_information": {
+                "schema_id": "https://www.joanneum.at/jim/product_information.schema.json",
+                "schema_version": 7262,
+                "product_type": "camera_cal",
+                "product_state": "transformed",
+                "creator_id": "TransformCal",
+                "creation_datetime": "2025-04-29T22:32:08.126887+0000"
+            }
+        },
+        {
+            "metadata_file": "products/camera_cal/transformed/ZL0_0360_0698912554_928RAD_N0101114ZCAM08390_0790LMA02.cal.json",
+            "product_information": {
+                "schema_id": "https://www.joanneum.at/jim/product_information.schema.json",
+                "schema_version": 7262,
+                "product_type": "camera_cal",
+                "product_state": "transformed",
+                "creator_id": "TransformCal",
+                "creation_datetime": "2025-04-29T22:32:08.132870+0000"
+            }
+        },
+        {
+            "metadata_file": "products/camera_cal/transformed/ZL0_0360_0698912567_928RAD_N0101114ZCAM08390_0790LMA02.cal.json",
+            "product_information": {
+                "schema_id": "https://www.joanneum.at/jim/product_information.schema.json",
+                "schema_version": 7262,
+                "product_type": "camera_cal",
+                "product_state": "transformed",
+                "creator_id": "TransformCal",
+                "creation_datetime": "2025-04-29T22:32:08.138854+0000"
+            }
+        },
+        {
+            "metadata_file": "products/camera_cal/transformed/ZL0_0360_0698912596_928RAD_N0101114ZCAM08390_0790LMA02.cal.json",
+            "product_information": {
+                "schema_id": "https://www.joanneum.at/jim/product_information.schema.json",
+                "schema_version": 7262,
+                "product_type": "camera_cal",
+                "product_state": "transformed",
+                "creator_id": "TransformCal",
+                "creation_datetime": "2025-04-29T22:32:08.144839+0000"
+            }
+        },
+        {
+            "metadata_file": "products/camera_cal/transformed/ZL0_0360_0698912613_928RAD_N0101114ZCAM08390_0790LMA02.cal.json",
+            "product_information": {
+                "schema_id": "https://www.joanneum.at/jim/product_information.schema.json",
+                "schema_version": 7262,
+                "product_type": "camera_cal",
+                "product_state": "transformed",
+                "creator_id": "TransformCal",
+                "creation_datetime": "2025-04-29T22:32:08.151820+0000"
+            }
+        },
+        {
+            "metadata_file": "products/camera_cal/transformed/ZL0_0360_0698912626_928RAD_N0101114ZCAM08390_0790LMA02.cal.json",
+            "product_information": {
+                "schema_id": "https://www.joanneum.at/jim/product_information.schema.json",
+                "schema_version": 7262,
+                "product_type": "camera_cal",
+                "product_state": "transformed",
+                "creator_id": "TransformCal",
+                "creation_datetime": "2025-04-29T22:32:08.158801+0000"
+            }
+        },
+        {
+            "metadata_file": "products/camera_cal/transformed/ZL0_0360_0698912654_928RAD_N0101114ZCAM08390_0790LMA02.cal.json",
+            "product_information": {
+                "schema_id": "https://www.joanneum.at/jim/product_information.schema.json",
+                "schema_version": 7262,
+                "product_type": "camera_cal",
+                "product_state": "transformed",
+                "creator_id": "TransformCal",
+                "creation_datetime": "2025-04-29T22:32:08.164785+0000"
+            }
+        },
+        {
+            "metadata_file": "products/camera_cal/transformed/ZL0_0360_0698912671_928RAD_N0101114ZCAM08390_0790LMA02.cal.json",
+            "product_information": {
+                "schema_id": "https://www.joanneum.at/jim/product_information.schema.json",
+                "schema_version": 7262,
+                "product_type": "camera_cal",
+                "product_state": "transformed",
+                "creator_id": "TransformCal",
+                "creation_datetime": "2025-04-29T22:32:08.171766+0000"
+            }
+        },
+        {
+            "metadata_file": "products/camera_cal/transformed/ZL0_0360_0698912684_928RAD_N0101114ZCAM08390_0790LMA02.cal.json",
+            "product_information": {
+                "schema_id": "https://www.joanneum.at/jim/product_information.schema.json",
+                "schema_version": 7262,
+                "product_type": "camera_cal",
+                "product_state": "transformed",
+                "creator_id": "TransformCal",
+                "creation_datetime": "2025-04-29T22:32:08.177750+0000"
+            }
+        },
+        {
+            "metadata_file": "products/camera_cal/transformed/ZL0_0360_0698912712_928RAD_N0101114ZCAM08390_0790LMA02.cal.json",
+            "product_information": {
+                "schema_id": "https://www.joanneum.at/jim/product_information.schema.json",
+                "schema_version": 7262,
+                "product_type": "camera_cal",
+                "product_state": "transformed",
+                "creator_id": "TransformCal",
+                "creation_datetime": "2025-04-29T22:32:08.186726+0000"
+            }
+        },
+        {
+            "metadata_file": "products/camera_cal/transformed/ZL0_0360_0698912729_928RAD_N0101114ZCAM08390_0790LMA02.cal.json",
+            "product_information": {
+                "schema_id": "https://www.joanneum.at/jim/product_information.schema.json",
+                "schema_version": 7262,
+                "product_type": "camera_cal",
+                "product_state": "transformed",
+                "creator_id": "TransformCal",
+                "creation_datetime": "2025-04-29T22:32:08.192710+0000"
+            }
+        },
+        {
+            "metadata_file": "products/camera_cal/transformed/ZL0_0360_0698912742_928RAD_N0101114ZCAM08390_0790LMA02.cal.json",
+            "product_information": {
+                "schema_id": "https://www.joanneum.at/jim/product_information.schema.json",
+                "schema_version": 7262,
+                "product_type": "camera_cal",
+                "product_state": "transformed",
+                "creator_id": "TransformCal",
+                "creation_datetime": "2025-04-29T22:32:08.198694+0000"
+            }
+        }
+    ],
+    "camera_system": "Mars 2020 Mastcam-Z"
+}

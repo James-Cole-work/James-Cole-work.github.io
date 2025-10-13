@@ -4,44 +4,46 @@
     <meta name="viewport" 
           content="width=device-width, 
                    initial-scale=1.0">
-    <title>Exomars Target Selector</title>
+    <title>PASTI - PAncam Suggested Target Interface</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
+  <div id = "container">
     <div id="threejs-container">
         <div id="threejs-canvas"></div>
-        <div id="sidebar">
+        
+      </div>
+
+<div id="sidebar">
           
           <button name = 'login' > Login</button>
-          <button name = 'logout' > Logout</button><br />
+          <button name = 'logout' > Logout</button>
  
           <div class="dropdown">
           
-            <select id="solSelect">
+            <select title = "SolSelect"id="solSelect">
             <option value="NoSol">Select Sol</option>
 
             <option value="Sol1">Sol1</option>
             <option value="Sol2">Sol2</option>
             <option value="Sol3">Sol3</option>
             </select>
-          </div><br /><br />
+          </div><br />
 
-          <button onclick="zoomIn()">Zoom In</button><br />
-          <button onclick="zoomOut()">Zoom Out</button><br />
-          <button onclick="resetView()">Reset View</button><br /><br />
+          <button onclick="zoomIn()">Zoom In</button>
+          <button onclick="zoomOut()">Zoom Out</button>
+          <button onclick="resetView()">Reset View</button><br />
 
           <button name = 'targetclear' onclick="clearMarkers()"> Clear Current Targets</button>
-          <button name = 'targetsend'> Send and Confirm Targets</button><br /><br />
+          <button name = 'targetsend'> Send and Confirm Targets</button><br />
 
 
-          <a><button onclick = "jsonDownload()"> Download Suggestions </button></a><br /><br />
-          <label for="myfile"  style = 'font-size: 3vh;'>Upload Suggestions</label> <br /><br />
-          <form action="">
-          <input type="file" id="jsonFile" accept=".json" style = 'font-size: 2vh;'>
+          <a><button onclick = "jsonDownload()" id ="download"> Download Suggestions </button></a><br />
+          <label for="download"  style = 'font-size: 2vh;'>Upload Suggestions</label>
+          <input type="file" id="jsonFile" accept=".json" style = 'font-size: 2vh;' title="jsondown">
           <input type="button"  value="Submit" onclick = "jsonUpload()" style = 'font-size: 2vh;'>
-        </form> <br /><br />
-
-
+        </form> 
+          <br />
           <div>
             <input type="checkbox" onclick = "coordGrid()" id="scales" name="scales" />
             <label for="scales" style = 'font-size: 2vh;'>Coordinate Gridlines</label>
@@ -50,16 +52,9 @@
             <input type="checkbox" onclick = "markerShow()" id="markerShow" name="markerShow" checked/>
             <label for="markerShow" style = 'font-size: 2vh;'>Show Suggestions</label>
           </div>
-          
-          
-          
-
-
-
-
+  
         </div>
-      </div>
-
+        </div>
 
       <div id="popupForm" style="display:none;" class="popup">
         <form id="markerForm">
@@ -87,9 +82,12 @@
     renderer.alpha=true;
     container.appendChild(renderer.domElement);
 
+    
+    console.log("Canvas size:", renderer.domElement.width, renderer.domElement.height);
+
     let sphere; // Make it accessible globally
 
-    let gen_radius = 25; //general radius for spheres
+    let gen_radius = 1000; //general radius for spheres
 
     //'ZCAM-0360-ZCAM08390-L-RAD-ALL-79-MOSAIC-SPHR-20250430Texture.tif.json'
     let sphereCoords;
@@ -97,6 +95,49 @@
     let mapWidth;
     let mapHeight;
 
+ const viewSize = gen_radius/5; // controls how much of the inside is visible
+    const scene = new THREE.Scene();
+    const aspect = window.innerWidth / window.innerHeight;
+const camera = new THREE.PerspectiveCamera(
+    60, window.innerWidth / window.innerHeight, 0.1, 1100
+);
+
+    camera.position.set(-0.1, 0, 0);
+
+
+    const axesHelper = new THREE.AxesHelper(100);
+    axesHelper.material.transparent = true;
+    axesHelper.material.opacity = 0.5;
+    //scene.add(axesHelper);
+
+    const controls = new THREE.OrbitControls(camera, renderer.domElement);
+    //controls.enableZoom = true;
+    controls.minDistance = 0.1;
+    controls.maxDistance = gen_radius * 0.5;
+    controls.zoomSpeed = 1;
+    controls.minZoom = 0.1;
+    controls.enablePan = true;
+    controls.enableDamping = true;
+    controls.dampingFactor = 0.2;
+    controls.rotateSpeed = -0.1; 
+
+    controls.mouseButtons = {
+  LEFT: null,
+  MIDDLE:null,
+  RIGHT: THREE.MOUSE.ROTATE   
+};
+function zoomCamera(delta) {
+
+    camera.fov = THREE.MathUtils.clamp(camera.fov + delta, 20, 60);
+    camera.updateProjectionMatrix();
+
+}
+
+// Example: attach to mouse wheel
+window.addEventListener('wheel', (e) => {
+    e.preventDefault();
+    zoomCamera(e.deltaY * 0.05);
+}, { passive: false });
 
 
 async function solSelect1() {
@@ -117,7 +158,19 @@ solSelect1().then(({ sphereCoords, mapTransform, mapWidth, mapHeight }) => {
     console.log(sphereCoords, mapTransform, mapWidth, mapHeight);
   
 });
+const label = document.createElement('div');
+label.style.position = 'absolute';
+label.style.top = '95vh';
+label.style.left = '10px';
+label.style.padding = '5px';
+label.style.background = 'rgba(0,0,0,0.5)';
+label.style.color = 'white';
+label.style.fontFamily = 'monospace';
+label.style.zIndex = '100';
+document.body.appendChild(label);
 
+const markers = [];
+let markerit  = 0;
 
 async function loadJsonData(jsonPath) {
   try {
@@ -144,9 +197,9 @@ async function loadJsonData(jsonPath) {
 (texture) => {
   console.log('Texture loaded successfully');
 
-  const radius = 15;
+  const radius = gen_radius;
   const widthSegments = 32
-  const heightSegments = 8
+  const heightSegments = 64
   const phiStart = 0
   const phiLength = Math.PI*2
   const thetaStart = 0
@@ -154,7 +207,7 @@ async function loadJsonData(jsonPath) {
 
   const geometry = new THREE.SphereGeometry(gen_radius, widthSegments, heightSegments, phiStart, phiLength, thetaStart, thetaLength)
   const material = new THREE.MeshBasicMaterial({
-    color: 0x0000ff,       // Blue color
+    color: 0x00ffff,       // Blue color
     wireframe: true,       // Show only wireframe
   });
 
@@ -179,6 +232,8 @@ let transConst = (100/90)*(Math.PI/180)
 const textureLoader = new THREE.TextureLoader();
 
 
+const raycaster = new THREE.Raycaster();
+const mouse = new THREE.Vector2();
 
 function watchTextureChange() {
   if (currentTexturePath !== lastTexturePath) {
@@ -212,9 +267,8 @@ function watchTextureChange() {
       setTimeout(() => {
         loadJsonData(CoordsLoad).then(data => {
           if (data) {
-              const radius = 15;
               const widthSegments = 32
-              const heightSegments = 32
+              const heightSegments = 64
               const phiStart = data.mapTransform[0]*transConst
               const phiLength = data.mapTransform[1]*data.mapWidth*transConst
               const thetaStart = Math.PI-data.mapTransform[3]*transConst
@@ -251,39 +305,95 @@ document.getElementById('solSelect').addEventListener('change', (e) => {
 });
 
 
-    
-    const scene = new THREE.Scene();
+const radius = 10;
+const curve = new THREE.CatmullRomCurve3([]);
 
-    const camera = new THREE.PerspectiveCamera(
-      75,
-      window.innerWidth / window.innerHeight,
-      0.1,
-      2000
-    );
-    camera.position.set(-1, 0, 0
-    );
-    camera.lookAt( new THREE.Vector3(0,0,1));
+for (let lat = -90; lat <= 90; lat += 1) {
+  const theta = THREE.MathUtils.degToRad(90 - lat);
+  const phi = THREE.MathUtils.degToRad(180);
+  const x = radius * Math.sin(theta) * Math.cos(phi);
+  const y = radius * Math.cos(theta);
+  const z = radius * Math.sin(theta) * Math.sin(phi);
+  curve.points.push(new THREE.Vector3(x, y, z));
+}
 
-    const axesHelper = new THREE.AxesHelper(100);
-    scene.add(axesHelper);
-
-    const controls = new THREE.OrbitControls(camera, renderer.domElement);
-    controls.enableZoom = false;
-    controls.zoomSpeed = 3;
-    controls.enablePan = true;
-    controls.enableRotate = true;
-    controls.minDistance = 0.1;
-    controls.maxDistance = 800;
-    controls.enableDamping = true;
-    controls.dampingFactor = 0.05;
-    controls.mouseButtons.MIDDLE = null;
+// Tube geometry along the curve
+const tubeGeometry = new THREE.TubeGeometry(curve, 64, 0.02, 8, false);
+const tubeMaterial = new THREE.MeshBasicMaterial({ color: 0xff0000 });
+const thickLine = new THREE.Mesh(tubeGeometry, tubeMaterial);
+scene.add(thickLine);
 
 
+const panBar = document.createElement('div');
+panBar.style.position = 'absolute';
+panBar.style.top = '0px';
+panBar.style.left = '10px';
+panBar.style.width = '70vw';
+panBar.style.height = '10px';
+panBar.style.backgroundColor = '#fff';
+panBar.style.zIndex = '101';
+document.body.appendChild(panBar);
 
-  const raycaster = new THREE.Raycaster();
-  const mouse = new THREE.Vector2();
+const panMarker = document.createElement('div');
+panMarker.style.position = 'absolute';
+panMarker.style.top = '0px';
+panMarker.style.width = '2px';
+panMarker.style.height = '100%';
+panMarker.style.backgroundColor = 'red';
+panBar.appendChild(panMarker);
 
-  const markers = [];
+// Vertical Tilt bar (left)
+const tiltBar = document.createElement('div');
+tiltBar.style.position = 'absolute';
+tiltBar.style.top = '10px';
+tiltBar.style.left = '0px';
+tiltBar.style.width = '10px';
+tiltBar.style.height = '90vh';
+tiltBar.style.backgroundColor = '#fff';
+tiltBar.style.zIndex = '101';
+document.body.appendChild(tiltBar);
+
+const tiltMarker = document.createElement('div');
+tiltMarker.style.position = 'absolute';
+tiltMarker.style.left = '0px';
+tiltMarker.style.width = '100%';
+tiltMarker.style.height = '2px';
+tiltMarker.style.backgroundColor = 'blue';
+tiltBar.appendChild(tiltMarker);
+
+
+
+
+
+
+function updateCameraRulers() {
+    // Get the camera direction
+    const direction = new THREE.Vector3();
+    camera.getWorldDirection(direction); // normalized vector
+
+    // Convert to spherical coordinates
+    const spherical = new THREE.Spherical();
+    spherical.setFromVector3(direction);
+
+    let pan = -spherical.theta * (180/Math.PI) + 90;   // Azimuth
+    let tilt = -spherical.phi * (180/Math.PI) + 90;    // Polar
+    if(pan > 180) pan -= 360;
+
+    // Move Pan marker (horizontal)
+    const panNorm = (pan + 180) / 360; // map -180..180 to 0..1
+    const panWidth = panBar.clientWidth;
+    panMarker.style.left = `${panNorm * panWidth}px`;
+
+    // Move Tilt marker (vertical)
+    const tiltNorm = (90 - tilt) / 180; // map +90..-90 to 0..1
+    const tiltHeight = tiltBar.clientHeight;
+    tiltMarker.style.top = `${tiltNorm * tiltHeight}px`;
+
+    // Optional: update label
+    //label.textContent = `Camera: Pan = ${pan.toFixed(2)}, Tilt = ${tilt.toFixed(2)}`;
+}
+
+
 
   let xdata = 0;
   let ydata= 0;
@@ -424,7 +534,7 @@ renderer.domElement.addEventListener("mousemove", (event) => {
         const markerPhi = phi;
         const markerTheta = theta;
         ;
-        const hrcangle = 2.5*(Math.PI/180);
+        const hrcangle = 0.5*4.88*(Math.PI/180);
 
         const hrc = new THREE.Mesh(
           new THREE.SphereGeometry(gen_radius-0.2, 16, 16, markerTheta+Math.PI/2-hrcangle, hrcangle*2, markerPhi-hrcangle, hrcangle*2 ),
@@ -493,14 +603,13 @@ function closePopup() { //closes form when done
   const popup = document.getElementById("popupForm");
   popup.style.display = "none";
 }
-let markerit  = 0;
 
 function placeMarker(position, data) {
 
   textureLoader.load('Flag.png', (markerTexture) => {
 
   const marker = new THREE.Mesh(
-    new THREE.PlaneGeometry(0.4, 0.4),
+    new THREE.PlaneGeometry(50, 50),
     new THREE.MeshBasicMaterial({ map: markerTexture, side: THREE.DoubleSide,   transparent: true})
   );
 
@@ -508,7 +617,7 @@ function placeMarker(position, data) {
   markerit += 1;
   marker.position.copy(position);
 
-  const offset = 0.1;
+  const offset = gen_radius/10;
 
   const direction = position.clone().normalize(); 
   marker.position.add(direction.multiplyScalar(-offset));
@@ -552,56 +661,46 @@ function clearMarkers() {
 
 var w = innerWidth / 1.5, h = innerHeight / 1.5;
 const rect = renderer.domElement.getBoundingClientRect();
-const label = document.createElement('div');
-label.style.position = 'absolute';
-label.style.top = '10px';
-label.style.left = '10px';
-label.style.color = 'white';
-label.style.fontFamily = 'monospace';
-label.style.background = 'black';
-document.body.appendChild(label);
-function updateCameraLookAtPoint() {
-          const direction = new THREE.Vector3();
-          camera.getWorldDirection(direction);
 
-          const lookDistance = gen_radius; // Arbitrary distance to project the direction
-          const lookAtPoint = camera.position.clone().add(direction.multiplyScalar(lookDistance));
-          
-          const spherical = new THREE.Spherical();
-          spherical.setFromVector3(direction);
-          
 
-          var pan = -spherical.theta * (180/Math.PI) + 90; // Azimuthal angle in degrees
-          const tilt = - spherical.phi * (180/Math.PI) + 90 ;     // Polar angle in degrees
+renderer.domElement.addEventListener('mousemove', (event) => {
+    const rect = renderer.domElement.getBoundingClientRect();
 
-          if (pan > 180) {
-            pan  = pan - 360;
-          }
+    // Convert mouse position to normalized device coordinates (-1 to +1)
+    const mouse = new THREE.Vector2();
+    mouse.x = ((event.clientX - rect.left) / rect.width) * 2 - 1;
+    mouse.y = -((event.clientY - rect.top) / rect.height) * 2 + 1;
 
-          label.textContent = `Looking at: Pan = ${pan.toFixed(2)}, Tilt = ${tilt.toFixed(2)}`;
+    // Raycast from camera through mouse
+    const raycaster = new THREE.Raycaster();
+    raycaster.setFromCamera(mouse, camera);
 
-        }
+    const intersects = raycaster.intersectObject(sphere);
+    
+    if (intersects.length > 0) {
+        const point = intersects[0].point;
+        const spherical = new THREE.Spherical().setFromVector3(point);
+
+        let pan = -spherical.theta * (180 / Math.PI) + 90;   // Azimuth
+        let tilt = -spherical.phi * (180 / Math.PI) + 90;    // Polar
+        if (pan > 180) pan -= 360;
+        label.textContent = `Pan: ${pan.toFixed(2)}, Tilt: ${tilt.toFixed(2)}`;
+    } else {
+        label.textContent = `Pan: --, Tilt: --`;
+    }
+});
+
 
     function animate() {
       requestAnimationFrame(animate);
+      //updateCameraLookAtPoint(); // Show look direction
       controls.update();
-      updateCameraLookAtPoint(); // Show look direction
+      updateCameraRulers();
       renderer.render(scene, camera);
     }
 
 
 
-    window.addEventListener('wheel', (event) => {
-  if (event.deltaY < 0) {
-
-    camera.zoom *= 1.5;
-    camera.updateProjectionMatrix();
-  } else if (event.deltaY > 0) {
-
-    camera.zoom /= 1.5;
-    camera.updateProjectionMatrix();
-  }
-});
 
 
     function zoomIn() {
@@ -616,9 +715,10 @@ function updateCameraLookAtPoint() {
 
     function resetView() {
       camera.zoom = 1;
-      camera.position.set(-1, 0, 0
+      camera.position.set(-0.1, 0, 0
         );
-      camera.lookAt( new THREE.Vector3(0,0,1));
+
+
       camera.updateProjectionMatrix();
     }
 
@@ -629,10 +729,10 @@ function updateCameraLookAtPoint() {
     function coordGrid() {
         if (grid_status === true) {
 
-            const radius = gen_radius-0.1;
-            const segments = 360/15;
-            const rings = 180/15;
-            const material = new THREE.LineBasicMaterial({ color: 0xff0000 });
+            const radius = gen_radius*0.99;
+            const segments = 360/45;
+            const rings = 180/30;
+            const material = new THREE.LineBasicMaterial({ color: 0x00ffff });
             const gridGeometry = new THREE.BufferGeometry();
                   
             const positions = [];
@@ -677,24 +777,31 @@ function updateCameraLookAtPoint() {
               scene.add(labelGroup);
                   // Function to create text sprite
              function makeLabel(text, position) {
-                  
-
+                  console.log('help');
                   const canvas = document.createElement('canvas');
-                  canvas.width = 400;
-                  canvas.height = 128;
+                  canvas.width = 1024; // 2x width
+                  canvas.height = 512; // 2x height
                   const ctx = canvas.getContext('2d');
                   ctx.fillStyle = 'white';
-                  ctx.font = '128px sans-serif';
-                  ctx.fillText(text, 60, 128);
+                  ctx.font = '80px Arial';
+                  ctx.textAlign = 'center';
+                  ctx.textBaseline = 'middle';
+                  ctx.fillText(text, canvas.width / 2, canvas.height / 2);
+
+              
 
                   const texture = new THREE.CanvasTexture(canvas);
-                  const material = new THREE.SpriteMaterial({ map: texture, transparent: true, depthTest: false, });
+                  texture.needsUpdate = true;
+                  const material = new THREE.SpriteMaterial({ map: texture, transparent: true, depthTest: false, depthWrite: false});
                   const sprite = new THREE.Sprite(material);
-                  sprite.scale.set(0.5, 0.25, 1);
-                  sprite.renderOrder = 999; 
+
+                  const labelSize = gen_radius * 0.5; // adjust this multiplier
+                  sprite.scale.set(labelSize, labelSize / 2, 1);
+
+                  // Position the label slightly off the surface of the sphere
+                  sprite.position.copy(position.clone().multiplyScalar(1.05));
                   sprite.name = 'gridlabels';
                   sprite.position.copy(position.clone().multiplyScalar(1.1));
-                  scene.add(sprite);
 
                   const labelGroup = scene.getObjectByName('gridlabels');
                   if (labelGroup) labelGroup.add(sprite);
@@ -774,14 +881,64 @@ function updateCameraLookAtPoint() {
       }
     }
 
+
+let wacPreview = null;
+let wPressed = false;
+
 let hrcPreview = null;
-let controlPressed = false;
+let hPressed = false;
 
 let enfysPreview = null;
-let shiftPressed = false;
-
+let ePressed = false;
 
 function onMouseMove1(event) {
+  const rect = renderer.domElement.getBoundingClientRect();
+  mouse.x = ((event.clientX - rect.left) / rect.width) * 2 - 1;
+  mouse.y = -((event.clientY - rect.top) / rect.height) * 2 + 1;
+  raycaster.setFromCamera(mouse, camera);
+
+  const intersects = raycaster.intersectObject(sphere);
+
+  if (intersects.length > 0) {
+    const intersectPoint = intersects[0].point.clone();
+
+    // Convert intersection point to spherical coordinates
+    const spherical = new THREE.Spherical();
+    spherical.setFromVector3(intersectPoint);
+
+    if (wacPreview) {
+      scene.remove(wacPreview);
+      wacPreview.geometry.dispose();
+      wacPreview.material.dispose();
+      wacPreview = null;
+    }
+
+    const wacangle = 38.3/2 * (Math.PI / 180);
+
+    wacPreview = new THREE.Mesh(
+      new THREE.SphereGeometry(
+        gen_radius - 0.2,
+        16,
+        16,
+        spherical.theta + Math.PI / 2 - wacangle,
+        wacangle * 2,
+        spherical.phi - wacangle,
+        wacangle * 2
+      ),
+      new THREE.MeshBasicMaterial({
+        color: 0xffffff,
+        transparent: true,
+        opacity: 0.4,
+        side: THREE.BackSide,
+        depthTest: false,
+      }))
+
+    wacPreview.position.set(0, 0, 0);
+    scene.add(wacPreview);
+  
+  }
+}
+function onMouseMove2(event) {
   const rect = renderer.domElement.getBoundingClientRect();
   mouse.x = ((event.clientX - rect.left) / rect.width) * 2 - 1;
   mouse.y = -((event.clientY - rect.top) / rect.height) * 2 + 1;
@@ -804,7 +961,7 @@ function onMouseMove1(event) {
       hrcPreview = null;
     }
 
-    const hrcangle = 2.5 * (Math.PI / 180);
+    const hrcangle = 4.88/2 * (Math.PI / 180);
 
     hrcPreview = new THREE.Mesh(
       new THREE.SphereGeometry(
@@ -830,7 +987,7 @@ function onMouseMove1(event) {
   }
 }
 
-function onMouseMove2(event) {
+function onMouseMove3(event) {
   const rect = renderer.domElement.getBoundingClientRect();
   mouse.x = ((event.clientX - rect.left) / rect.width) * 2 - 1;
   mouse.y = -((event.clientY - rect.top) / rect.height) * 2 + 1;
@@ -879,17 +1036,40 @@ function onMouseMove2(event) {
   }
 }
 
-function onKeyDownCtrl(event) {
-  if (event.key === "Control" && !controlPressed) {
-    controlPressed = true;
+
+function onKeyDownWac(event) {
+  if (event.key === "w" && !wPressed) {
+    wPressed = true;
     renderer.domElement.addEventListener("mousemove", onMouseMove1);
   }
 }
 
-function onKeyUpCtrl(event) {
-  if (event.key === "Control") {
-    controlPressed = false;
+function onKeyUpWac(event) {
+  if (event.key === "w") {
+    wPressed = false;
     renderer.domElement.removeEventListener("mousemove", onMouseMove1);
+
+    if (wacPreview) {
+      scene.remove(wacPreview);
+      wacPreview.geometry.dispose();
+      wacPreview.material.dispose();
+      wacPreview = null;
+    }
+  }
+}
+
+
+function onKeyDownHrc(event) {
+  if (event.key === "h" && !hPressed) {
+    hPressed = true;
+    renderer.domElement.addEventListener("mousemove", onMouseMove2);
+  }
+}
+
+function onKeyUpHrc(event) {
+  if (event.key === "h") {
+    hPressed = false;
+    renderer.domElement.removeEventListener("mousemove", onMouseMove2);
 
     if (hrcPreview) {
       scene.remove(hrcPreview);
@@ -900,17 +1080,17 @@ function onKeyUpCtrl(event) {
   }
 }
 
-function onKeyDownShift(event) {
-  if (event.key === "Shift" && !shiftPressed) {
-    shiftPressed = true;
-    renderer.domElement.addEventListener("mousemove", onMouseMove2);
+function onKeyDownEnfys(event) {
+  if (event.key === "e" && !ePressed) {
+    ePressed = true;
+    renderer.domElement.addEventListener("mousemove", onMouseMove3);
   }
 }
 
-function onKeyUpShift(event) {
-  if (event.key === "Shift") {
-    shiftPressed = false;
-    renderer.domElement.removeEventListener("mousemove", onMouseMove2);
+function onKeyUpEnfys(event) {
+  if (event.key === "e") {
+    ePressed = false;
+    renderer.domElement.removeEventListener("mousemove", onMouseMove3);
 
     if (enfysPreview) {
       scene.remove(enfysPreview);
@@ -921,11 +1101,31 @@ function onKeyUpShift(event) {
   }
 }
 
-window.addEventListener("keydown", onKeyDownCtrl);
-window.addEventListener("keyup", onKeyUpCtrl);
+window.addEventListener("keydown", onKeyDownWac);
+window.addEventListener("keyup", onKeyUpWac);
 
-window.addEventListener("keydown", onKeyDownShift);
-window.addEventListener("keyup", onKeyUpShift);
+window.addEventListener("keydown", onKeyDownHrc);
+window.addEventListener("keyup", onKeyUpHrc);
+
+window.addEventListener("keydown", onKeyDownEnfys);
+window.addEventListener("keyup", onKeyUpEnfys);
+
+function onWindowResize() {
+  const width = window.innerWidth;
+  const height = window.innerHeight;
+
+  camera.aspect = width / height;
+  camera.updateProjectionMatrix();
+  
+  renderer.setSize(container.clientWidth, container.clientHeight);
+  renderer.setPixelRatio(window.devicePixelRatio);
+
+
+  
+}
+
+// Listen for resize events
+window.addEventListener('resize', onWindowResize, false);
 
 function jsonDownload(){
     const a = document.querySelector('a');

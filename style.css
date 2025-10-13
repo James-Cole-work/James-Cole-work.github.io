@@ -6,46 +6,71 @@ html, body {
     overflow: hidden;
     font-family: sans-serif;
   }
+
+  #container {
+
+    display: flex;
+    width: 100vw;
+    height: 100vh;
+  }
   #threejs-container {
     display: flex;
-    height: 100vh;       /* full viewport height */
-    width: 100vw;        /* full viewport width */
+    position: relative;
+    width: 100vw;
+    height: 100vh;
+    background: #222;
+    z-index: 1;
+
   }
-  
+
+
   #threejs-canvas {
-    flex: 1;             /* take all leftover horizontal space */
-    background: #000;    /* just to see the canvas area */
-    position: relative;  /* for positioning canvas if needed */
-    z-index: 0;
+    position: absolute;  
+    top: 10px;
+    left: 10px;
+    right: 300px; /* leave space for sidebar */
+
+    background: #000;
+    z-index: 2;
+    height: 90vh;
+    width: 70vw;
+        border: 1px solid blue;  
+    pointer-events: auto;
+
   }
-  
+
   #sidebar {
-    width: 25vw;
-    background: #ededed;
-    padding: 10px;
-    max-height: 100%;
-    box-sizing: border-box;
-    column-gap: 20px;
-    overflow-y: fixed;
-    position: relative; /* make sure it’s positioned */
-    z-index: 10; /* higher than canvas */
-    line-height:1vh;
+    margin-left: auto; 
+    top: 0;
+    right: 0;
+    padding: 10px; 
+    width: calc(30vw-10px);
+    height: 100vh;
+    background: #ababab;
+    z-index: 0;
+    display: flex;
+    flex-direction: column;     /* stack buttons vertically */
+    justify-content: flex-start;/* align items to top */
+    align-items: stretch;       /* make children stretch to container width */
+
   }
 
   button {
     padding: 3vh;
     background: #444;
+    border: 5px #000;
     height: 1vh;
     color: white;
     border: none;
     cursor: pointer;
-    margin-bottom: 2vh;
+    margin: 3px 0;
+    border-radius: 5px;
     font-size: 2vh;
     line-height: 2vh;
     
 
   }
-
+  
   button:hover {
     background: #9b0f0f;
   }

@@ -15,23 +15,25 @@
       </div>
 
 <div id="sidebar">
+          <div class="container">
+          <button name = 'login' style = 'width: 8vw'> Login</button>
+          <button name = 'logout'style = 'width: 8vw' > Logout</button>
+            </div>
+          <div class="dropdown" id="solSelector">
           
-          <button name = 'login' > Login</button>
-          <button name = 'logout' > Logout</button>
- 
-          <div class="dropdown">
-          
-            <select title = "SolSelect"id="solSelect">
+            <select title = "SolSelect"id="solSelect"  style = 'height: 4vh'>
             <option value="NoSol">Select Sol</option>
 
             <option value="Sol1">Sol1</option>
             <option value="Sol2">Sol2</option>
             <option value="Sol3">Sol3</option>
+            <option value="Sol4">Sol4</option>
             </select>
           </div><br />
-
-          <button onclick="zoomIn()">Zoom In</button>
-          <button onclick="zoomOut()">Zoom Out</button>
+          <div class="container">
+          <button onclick="zoomIn()"style = 'width: 8vw'>Zoom In</button>
+          <button onclick="zoomOut()"style = 'width: 8vw'>Zoom Out</button>
+          </div>
           <button onclick="resetView()">Reset View</button><br />
 
           <button name = 'targetclear' onclick="clearMarkers()"> Clear Current Targets</button>
@@ -52,21 +54,44 @@
             <input type="checkbox" onclick = "markerShow()" id="markerShow" name="markerShow" checked/>
             <label for="markerShow" style = 'font-size: 2vh;'>Show Suggestions</label>
           </div>
-  
-        </div>
+        <br/><br/><br/><br/><br/><br/>
+        <p>Right Click: Pan <br/>W: WAC FoV <br/>H: HRC FoV <br/>E: Enfys FoV</p>
         </div>
 
-      <div id="popupForm" style="display:none;" class="popup">
+        </div>
+
+      <div id="popupForm" style="display:none; font-size: 2vh; width: 35vw; height: 80vh;" class="popup">
         <form id="markerForm">
-          <label>Title: <input type="text" name="title" /></label><br />
-          <label>Description: <textarea name="description"></textarea></label><br />
-          <label><input type="checkbox" name="enfys" /> Enfys Target?</label><br />
-          <label><input type="checkbox" name="HRC" /> HRC Target?</label><br />
+          <label>Suggestion Title: <input type="text" name="title" /></label><br />
+          <label>Suggestion ID: <input type="text" name="suggestionID" disabled /></label><br />
+          <label>User ID: <input type="text" name="userID" disabled /></label><br />
+          <label>Suggestion Description:<br/><textarea name="description"></textarea></label><br />
+          <label>Science Intent:<br/><textarea name="intent" ></textarea></label><br />
+
+          <label>HRC:<input type="checkbox" name="HRC" /></label>
+          <label>Enfys:<input type="checkbox" name="enfys" /></label><br />
+          <label>WAC RGB:<input type="checkbox" name="wacRGB" /></label>
+          <label>WAC Multispectral:<input type="checkbox" name="wacmulti" /></label><br />
+          <label>Mosaic:<input type="checkbox" name="mosaic" /></label><br />
+
+          <label>Keywords:<div class="dropdown" id="keywords">
+            <select title = "Select Keywords"id="keywords"  style = 'height: 4vh'>
+            <option value="nokw">Select Keywords</option>
+
+            <option value="kw1">Keyword 1</option>
+            <option value="kw2">Keyword 2</option>
+            <option value="kw3">Keyword 3</option>
+            </select>
+          </div></label><br />
+          <label><input type="text" name="selectedkeyywords" disabled /></label><br />
+
+          <label>Other Notes:<br/><textarea name="notes"></textarea></label><br />
+
           <button type="submit">Save</button>
           <button type="button" onclick="closePopup()">Cancel</button>
         </form>
       </div>
-
+      
       <div id="tooltip" style="display:none; position:absolute; background:white; border:1px solid black; padding:5px; pointer-events:none; z-index:100;"></div>
       
 <!-- Three.js core -->
@@ -99,7 +124,7 @@
     const scene = new THREE.Scene();
     const aspect = window.innerWidth / window.innerHeight;
 const camera = new THREE.PerspectiveCamera(
-    60, window.innerWidth / window.innerHeight, 0.1, 1100
+    60, window.innerWidth / window.innerHeight, 0.1, 1500
 );
 
     camera.position.set(-0.1, 0, 0);
@@ -178,10 +203,13 @@ async function loadJsonData(jsonPath) {
     if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
     const data = await response.json();
     return {
-        sphereCoords: data.geometry_information.sphere_center,
-        mapTransform: data.map_transformation,
-        mapWidth: data.image_width,
-        mapHeight: data.image_height
+                sphereCoords: data.geometry_information.sphere_center,
+                mapTransform: data.map_transformation,
+                mapWidth: data.image_width,
+                mapHeight: data.image_height
+
+
+
     };
   } catch (error) {
     console.error(`Failed to load ${jsonPath}:`, error);
@@ -257,13 +285,19 @@ function watchTextureChange() {
       resetView();
     }
 
+    
+    if (currentTexturePath == 'Sol4') {
+      TextureLoad = '2025-10-13_JR_ExoMars_GTM_Products\\PanCam\\2022-10-04_Mini-SVT-1\\S0006Q001_mosaic_left\\Mosaic\\browse\\pan_der_sc_l_mosaic_20221004t103007.137z_20221004t103123.416z.png';
+      CoordsLoad = '2025-10-13_JR_ExoMars_GTM_Products\\PanCam\\2022-10-04_Mini-SVT-1\\S0006Q001_mosaic_left\\Mosaic\\browse\\pan_der_sc_l_mosaic_20221004t103007.137z_20221004t103123.416z_ValidateReport.json';
+      resetView();
+    }
+
+
     if (TextureLoad !== null) {
     // Load and update sphere texture
     textureLoader.load(TextureLoad, (newTexture) => {
       clearMarkers();
-      
-       
-      // Example 2: Load mars data later
+    
       setTimeout(() => {
         loadJsonData(CoordsLoad).then(data => {
           if (data) {
@@ -327,9 +361,9 @@ scene.add(thickLine);
 const panBar = document.createElement('div');
 panBar.style.position = 'absolute';
 panBar.style.top = '0px';
-panBar.style.left = '10px';
+panBar.style.left = '2vh';
 panBar.style.width = '70vw';
-panBar.style.height = '10px';
+panBar.style.height = '2vh';
 panBar.style.backgroundColor = '#fff';
 panBar.style.zIndex = '101';
 document.body.appendChild(panBar);
@@ -345,9 +379,9 @@ panBar.appendChild(panMarker);
 // Vertical Tilt bar (left)
 const tiltBar = document.createElement('div');
 tiltBar.style.position = 'absolute';
-tiltBar.style.top = '10px';
+tiltBar.style.top = '2vh';
 tiltBar.style.left = '0px';
-tiltBar.style.width = '10px';
+tiltBar.style.width = '2vh';
 tiltBar.style.height = '90vh';
 tiltBar.style.backgroundColor = '#fff';
 tiltBar.style.zIndex = '101';
@@ -393,13 +427,17 @@ function updateCameraRulers() {
     //label.textContent = `Camera: Pan = ${pan.toFixed(2)}, Tilt = ${tilt.toFixed(2)}`;
 }
 
-
+const zeroPad = (num, places) => String(num).padStart(places, '0')
 
   let xdata = 0;
   let ydata= 0;
   let zdata= 0;
 
+  const userid = 'Cole_User';
+  let suggestionid = 0;
 
+  let s_input = document.querySelector('input[name="suggestionID"]');
+  let u_input = document.querySelector('input[name="userID"]');
   let lastClickPosition = null;
 
 
@@ -408,7 +446,7 @@ function updateCameraRulers() {
         console.warn('Sphere not yet loaded');
         return;
     }
-
+    suggestionid = suggestionid +1;
     // Adjust for canvas offset
     const rect = renderer.domElement.getBoundingClientRect();
     mouse.x = ((event.clientX - rect.left) / rect.width) * 2 - 1;
@@ -416,6 +454,10 @@ function updateCameraRulers() {
 
     raycaster.setFromCamera(mouse, camera);
     sphere.updateMatrixWorld(); // Ensure transforms are up-to-date
+
+
+    s_input.value = zeroPad(suggestionid,4);
+    u_input.value = userid;
 
     const intersects = raycaster.intersectObject(sphere);
     console.log('Raycast intersects:', intersects);
@@ -426,6 +468,7 @@ function updateCameraRulers() {
     }
 });
 const suggestionData = [];
+
 document.getElementById("markerForm").addEventListener("submit", (e) => {
   e.preventDefault();
 
@@ -436,9 +479,14 @@ document.getElementById("markerForm").addEventListener("submit", (e) => {
   const formData = new FormData(e.target);
   const data = Object.fromEntries(formData.entries());
 
+  data.userid = userid;
+  data.suggestionid = zeroPad(suggestionid, 4);
 
   data.enfys = formData.has("enfys");
   data.hrc = formData.has("HRC");
+  data.wacrgb = formData.has("wacRGB");
+  data.wacmulti = formData.has("wacmulti");
+  data.mosaic = formData.has("mosaic");
 
   const spherical = new THREE.Spherical();
   spherical.setFromVector3(lastClickPosition);
@@ -455,6 +503,11 @@ document.getElementById("markerForm").addEventListener("submit", (e) => {
 
   data.position  = PTU;
   data.mouse = lastClickPosition;
+
+  //Insert other data here.
+
+
+  
 
   if (lastClickPosition) {
     placeMarker(lastClickPosition, data);
@@ -493,7 +546,7 @@ renderer.domElement.addEventListener("mousemove", (event) => {
     tooltip.style.left = `${event.clientX + 10}px`;
     tooltip.style.top = `${event.clientY + 10}px`;
     tooltip.style.display = "block";
-    tooltip.width = '150px';
+    tooltip.width = 'width: 35vw';
     let xround = Number(marker.position.x);
     let yround = Number(marker.position.y);
     let zround = Number(marker.position.z);
@@ -514,19 +567,26 @@ renderer.domElement.addEventListener("mousemove", (event) => {
     const phiround = phi;
 
     tooltip.innerHTML = `
-      <strong>${data.title || "Untitled"}</strong><br>
-      <em>${data.description || "No description"}</em><br>
-      <em>x: ${xround.toFixed(2)},</em>
-      <em>y: ${yround.toFixed(2)},</em>
-      <em>z: ${zround.toFixed(2)}</em><br>
+      <strong>Suggestion Title: ${data.title|| "Untitled"}</strong><br>
+      <em>User ID: ${data.userid || "No description"}</em><br>
+      <em>Suggestion ID: ${data.suggestionid || "No description"}</em><br>
+      <em>Suggestion Description: ${data.description || "No description"}</em><br>
+      <em>Science Intent: ${data.intent || "No description"}</em><br>
       <em>Pan Angle: ${thetaround.toFixed(2)},</em>
       <em>Tilt Angle: ${phiround.toFixed(2)}</em><br>
-      <label>
-        <input type="checkbox" disabled ${data.enfys ? "checked" : ""} /> Enfys Target?
+      <label>HRC: <input type="checkbox" disabled ${data.hrc ? "checked" : ""} />
+      </label>
+      <label>Enfys: <input type="checkbox" disabled ${data.enfys ? "checked" : ""} />
       </label><br>
-      <label>
-        <input type="checkbox" disabled ${data.hrc ? "checked" : ""} /> HRC Target?
+      <label>WAC RGB: <input type="checkbox" disabled ${data.wacrgb ? "checked" : ""} />
+      </label>
+      <label>WAC Multi: <input type="checkbox" disabled ${data.wacmulti ? "checked" : ""} />
       </label><br>
+      <label>Mosaic: <input type="checkbox" disabled ${data.mosaic ? "checked" : ""} />
+      </label><br>
+      <em>Keywords: ${data.keywords || "No description"}</em><br>
+      <em>Other Notes: ${data.notes || "No description"}</em><br>
+
     `;
       if (data.hrc === true) {
       if (!hrc_present) {
@@ -587,8 +647,6 @@ renderer.domElement.addEventListener("mousemove", (event) => {
     }
   }
 });
-
-
 
 function showPopup(x, y) {  //gives form to fill out by user about target
   const popup = document.getElementById("popupForm");

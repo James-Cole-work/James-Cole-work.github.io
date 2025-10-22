@@ -36,8 +36,6 @@ window.addEventListener('dblclick', (event) => {
     const intersects = raycaster.intersectObject(sphere);
     console.log('Raycast intersects:', intersects);
 
-
-
     if (intersects.length > 0 && intersects[0].object.name === "mySphere") {
         lastClickPosition = intersects[0].point.clone();
         clicks.push(lastClickPosition);
@@ -164,7 +162,7 @@ renderer.domElement.addEventListener("click", (event) => {
       lonMin,lonMax, latMin,latMax
     });
   }}
-  
+
 });
 
 renderer.domElement.addEventListener("mousemove", (event) => {
@@ -205,6 +203,8 @@ renderer.domElement.addEventListener("mousemove", (event) => {
   raycaster.setFromCamera(mouse, camera);
   const intersects = raycaster.intersectObjects(markers);
 
+
+
   const tooltip = document.getElementById("tooltip");
 
 
@@ -212,7 +212,9 @@ renderer.domElement.addEventListener("mousemove", (event) => {
   if (intersects.length > 0) {
     const marker = intersects[0].object;
     const data = marker.userData;
-
+    
+    console.log(marker);
+    
     if (data.position[2]){
           TLPan = data.position[0].toFixed(2)
           TLTilt = data.position[1].toFixed(2)

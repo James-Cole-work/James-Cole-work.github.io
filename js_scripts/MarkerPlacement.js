@@ -13,7 +13,7 @@ if (clicks.length < 2){
   markerit += 1;
   marker.position.copy(position);
 
-  const offset = gen_radius/10;
+  const offset = gen_radius*0.01;
 
   const direction = position.clone().normalize(); 
   marker.position.add(direction.multiplyScalar(-offset));
@@ -29,14 +29,34 @@ if (clicks.length < 2){
   });
   }
 else{
-  marker = scene.getObjectByName('currentPatch');
+  
+  //const marker = scene.getObjectByName('currentPatch');
+
+
+
+  const marker = new THREE.Mesh(
+    new THREE.CircleGeometry(5, 15),
+    new THREE.MeshBasicMaterial({color: 0xff0000, side: THREE.DoubleSide,   transparent: true, opacity : 1})
+  )
+
   markerit += 1;
+  marker.position.copy(position);
+
+  const offset = gen_radius/10;
+
+  const direction = position.clone().normalize(); 
+  marker.position.add(direction.multiplyScalar(-offset));
+  const center = new THREE.Vector3(0, 0, 0); 
+  marker.lookAt(center);
+
   marker.userData = data;
   marker.userData.id = markerit;
-  markers.push(marker);
-}
-}
 
+  scene.add(marker);
+  markers.push(marker);
+
+}
+}
 
 
 
@@ -86,6 +106,8 @@ var thetaA = null;
 var thetaB = null;
 // Rectangle generator that respects map transform
 function makeSpherePatchGeo(pointA, pointB, patchIt) {
+
+
   const sphericalA = new THREE.Spherical().setFromVector3(pointA);
   const sphericalB = new THREE.Spherical().setFromVector3(pointB);
 

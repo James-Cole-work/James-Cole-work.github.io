@@ -86,16 +86,19 @@ html, body {
     top: 100px;
     left: 100px;
     padding: 20px;
+    max-width: 30vw;
     background: white;
     border: 2px solid black;
     z-index: 9999;
     width: 300px;
+    overflow-wrap: break-word;
   }
 
   #markerForm textarea{
     width: 30vw;
     height: 10vh;
     resize: vertical; /* optional: allow vertical resize only */
+    overflow: auto;
   }
 
   #markerForm label{

@@ -38,12 +38,12 @@ function jsonUpload() {
 
                 for (let i = 0; i < uploadedJson.length; i++) {
                 
-                const mouse = uploadedJson[i].mouse;
+                const mouse = uploadedJson[i].mouse[0];
 
                 const position = new THREE.Vector3(mouse.x, mouse.y, mouse.z);
 
                 const data = uploadedJson[i];
-                placeMarker(position, data);
+                localMarker(position, data);
                 }
 
             } else {

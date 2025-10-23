@@ -1,6 +1,5 @@
 function placeMarker(position, data) {
 
-
 if (clicks.length < 2){
   textureLoader.load('Flag.png', (markerTexture) => {
 
@@ -26,14 +25,14 @@ if (clicks.length < 2){
   scene.add(marker);
   markers.push(marker);
 
+
   });
   }
+
+
 else{
   
   //const marker = scene.getObjectByName('currentPatch');
-
-
-
   const marker = new THREE.Mesh(
     new THREE.CircleGeometry(5, 15),
     new THREE.MeshBasicMaterial({color: 0xff0000, side: THREE.DoubleSide,   transparent: true, opacity : 1})
@@ -41,8 +40,8 @@ else{
 
   markerit += 1;
   marker.position.copy(position);
-
   const offset = gen_radius/10;
+
 
   const direction = position.clone().normalize(); 
   marker.position.add(direction.multiplyScalar(-offset));
@@ -56,6 +55,80 @@ else{
   markers.push(marker);
 
 }
+
+
+}
+
+function localMarker(position, data) {
+
+
+if (data && data.mouse) {
+  console.log(data.mouse.length);
+
+    if (data.mouse.length<2){
+        textureLoader.load('Flag.png', (markerTexture) => {
+    const marker = new THREE.Mesh(
+      new THREE.PlaneGeometry(50, 50),
+      new THREE.MeshBasicMaterial({ map: markerTexture, side: THREE.DoubleSide,   transparent: true})
+    )
+
+
+    markerit += 1;
+    marker.position.copy(position);
+
+    const offset = gen_radius*0.01;
+
+    const direction = position.clone().normalize(); 
+    marker.position.add(direction.multiplyScalar(-offset));
+    const center = new THREE.Vector3(0, 0, 0); 
+    marker.lookAt(center);
+
+    marker.userData = data;
+    marker.userData.id = markerit;
+
+    scene.add(marker);
+    markers.push(marker);
+    });
+  }
+  else {
+
+    const pointA = data.mouse[0];
+    const pointB = data.mouse[1];
+
+    const mesh = makeSpherePatchGeo(pointA, pointB);
+    meshes.push(mesh);
+    scene.add(mesh);
+
+    const marker = new THREE.Mesh(
+    new THREE.CircleGeometry(5, 15),
+    new THREE.MeshBasicMaterial({color: 0xff0000, side: THREE.DoubleSide,   transparent: true, opacity : 1})
+  )
+
+
+    markerit += 1;
+    marker.position.copy(position);
+    const offset = gen_radius/10;
+
+
+    const direction = position.clone().normalize(); 
+    marker.position.add(direction.multiplyScalar(-offset));
+    const center = new THREE.Vector3(0, 0, 0); 
+    marker.lookAt(center);
+
+    marker.userData = data;
+    marker.userData.id = markerit;
+
+    scene.add(marker);
+    markers.push(marker);
+
+
+
+  }
+
+
+
+}
+
 }
 
 
@@ -71,12 +144,29 @@ function clearMarkers() {
     // dispose geometry
     if (marker.geometry) {
       marker.geometry.dispose();
+    
     }
     // dispose material
     if (marker.material) {
       marker.material.dispose();
     }
   });
+
+    meshes.forEach(mesh => {
+    scene.remove(mesh);
+
+    // dispose geometry
+    if (mesh.geometry) {
+      mesh.geometry.dispose();
+    
+    }
+    // dispose material
+    if (mesh.material) {
+      mesh.material.dispose();
+    }
+  });
+
+  
 
   // 2. Clear the markers array
   markers.length = 0;
@@ -90,7 +180,6 @@ function clearMarkers() {
 let isDrawing = false;
 let startPoint = null;
 let currentPatch = null;
-let patchIt = 0;
 let lastDrawnPatch = null;
 
 let currentMap = {
@@ -105,12 +194,11 @@ var phiB = null;
 var thetaA = null;
 var thetaB = null;
 // Rectangle generator that respects map transform
-function makeSpherePatchGeo(pointA, pointB, patchIt) {
+function makeSpherePatchGeo(pointA, pointB) {
 
 
   const sphericalA = new THREE.Spherical().setFromVector3(pointA);
   const sphericalB = new THREE.Spherical().setFromVector3(pointB);
-
   // Normalize angles to [0, 2π)
   phiA = (sphericalA.phi + 2*Math.PI) % (2*Math.PI);
   phiB = (sphericalB.phi + 2*Math.PI) % (2*Math.PI);
@@ -150,7 +238,6 @@ function makeSpherePatchGeo(pointA, pointB, patchIt) {
     phiLength
   );
 
-  patchIt = patchIt +1;
 
   const mat = new THREE.MeshBasicMaterial({
     color: 0xffff00,
@@ -161,6 +248,7 @@ function makeSpherePatchGeo(pointA, pointB, patchIt) {
 
   const mesh = new THREE.Mesh(geom, mat);
   mesh.name = "drawnPatch";
+
   return mesh;
 }
 
@@ -177,14 +265,24 @@ function markerShow() {
         scene.remove(marker);
 
     });
+        meshes.forEach(mesh => {
+        scene.remove(mesh);
+
+    });
     marker_status = false;
     } else {
         markers.forEach(marker => {
         scene.add(marker);
     });
+        meshes.forEach(mesh => {
+        scene.add(mesh);
+
+    });
     marker_status = true;
 
     }
+
+    
 }
 
 // Close the dropdown menu if the user clicks outside of it

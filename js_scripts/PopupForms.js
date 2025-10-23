@@ -1,4 +1,5 @@
 
+
 const zeroPad = (num, places) => String(num).padStart(places, '0')
 
 const userid = 'Cole_User';
@@ -93,8 +94,9 @@ document.getElementById("markerForm").addEventListener("submit", (e) => {
   const PTU = [pant, tiltt, panb, tiltb];
 
   data.position  = PTU;
-  data.mouse = lastClickPosition;
-
+  data.mouse = clicks;
+  console.log(clicks);
+  console.log(data.mouse);
   suggestionid = suggestionid +1;
 
 
@@ -102,6 +104,7 @@ document.getElementById("markerForm").addEventListener("submit", (e) => {
 
   suggestionData.push(data);
   closePopup();
+
   e.target.reset();
 });
 
@@ -121,27 +124,33 @@ renderer.domElement.addEventListener("click", (event) => {
 
   const hitPoint = intersects[0].point.clone();
   if (event.shiftKey) {
+  
+  
+
   if (!isDrawing) {
-    clicks = [];
+
     // First click — start drawing
     startPoint = hitPoint;
     isDrawing = true;
-    clicks.push(startPoint);
+
 
   } else {
     // Second click — finish drawing
-
+    clicks = [];
     if (currentPatch) {
       // Finalize and store
-      
+
 
       markerType = 'patch';
 
       // Store this patch for the form to update
       lastDrawnPatch = currentPatch;
+      meshes.push(currentPatch);
       lastDrawnPatch.name = 'currentPatch';
+      
       if (intersects.length > 0 && intersects[0].object.name === "mySphere") {
         lastClickPosition = intersects[0].point.clone();
+        clicks.push(startPoint);
         clicks.push(lastClickPosition);
         showPopup(mouse.x, mouse.y);
       }
@@ -161,6 +170,7 @@ renderer.domElement.addEventListener("click", (event) => {
     console.log("Patch bounds (deg):", {
       lonMin,lonMax, latMin,latMax
     });
+
   }}
 
 });
@@ -188,7 +198,8 @@ renderer.domElement.addEventListener("mousemove", (event) => {
   }
 
   // Draw preview
-  currentPatch = makeSpherePatchGeo(startPoint, currentPoint, patchIt);
+  console.log(startPoint);
+  currentPatch = makeSpherePatchGeo(startPoint, currentPoint);
   scene.add(currentPatch);
 });
 
@@ -212,9 +223,8 @@ renderer.domElement.addEventListener("mousemove", (event) => {
   if (intersects.length > 0) {
     const marker = intersects[0].object;
     const data = marker.userData;
-    
-    console.log(marker);
-    
+  
+
     if (data.position[2]){
           TLPan = data.position[0].toFixed(2)
           TLTilt = data.position[1].toFixed(2)

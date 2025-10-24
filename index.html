@@ -19,15 +19,12 @@
           <button name = 'login' style = 'width: 8vw'> Login</button>
           <button name = 'logout'style = 'width: 8vw' > Logout</button>
             </div>
+          <button id="openDaySelector">Select Day</button>
           <div class="dropdown" id="solSelector">
-          
-            <select title = "SolSelect"id="solSelect"  style = 'height: 4vh'>
-            <option value="NoSol">Select Sol</option>
 
-            <option value="Sol1">Sol1</option>
-            <option value="Sol2">Sol2</option>
-            <option value="Sol3">Sol3</option>
-            <option value="Sol4">Sol4</option>
+          
+            
+            <p title = "SolSelect" id ="solSelect" style = 'height: 4vh'> No Sol Selected</p>
             </select>
           </div><br />
           <div class="container">
@@ -87,8 +84,8 @@
 
           <label>Other Notes:<br/><textarea name="notes"></textarea></label><br />
 
-          <button type="submit">Save</button>
-          <button type="button" onclick="closePopup()">Cancel</button>
+          <button type="submit" style = "width: 10vw;">Save</button>
+          <button type="button" onclick="closePopup()" style = "width: 10vw;">Cancel</button>
         </form>
       </div>
       
@@ -99,39 +96,44 @@
 <!-- OrbitControls -->
 <script src="https://unpkg.com/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
 
+<!-- Gather Data -->
+<script src="js_scripts2/Coords.js"></script>
+
 <!-- Graphical Setup Script-->
-<script src="js_scripts/GraphicalSetup.js"></script>
+<script src="js_scripts2/GraphicalSetup.js"></script>
 
 <!-- Texture Loader Script-->
-<script src="js_scripts/TextureLoad.js"></script>
+<script src="js_scripts2/TextureLoad.js"></script>
 
 <!-- Marker Placing Script-->
-<script src="js_scripts/MarkerPlacement.js"></script>
+<script src="js_scripts2/MarkerPlacement.js"></script>
 
 <!-- PopupForm Script-->
-<script src="js_scripts/PopupForms.js"></script>
+<script src="js_scripts2/PopupForms.js"></script>
 
 <!-- Key Press Script-->
-<script src="js_scripts/KeyPressFunctions.js"></script>
+<script src="js_scripts2/KeyPressFunctions.js"></script>
 
 <!-- json Handler Script-->
-<script src="js_scripts/jsonHandler.js"></script>
+<script src="js_scripts2/jsonHandler.js"></script>
 
 <!-- Miscelleanous Functions Script-->
-<script src="js_scripts/MiscFunctions.js"></script>
+<script src="js_scripts2/MiscFunctions.js"></script>
 
 
 
 
 
 <script>
-
+// Initial variables required before anything else can take place.
 const raycaster = new THREE.Raycaster();
 const mouse = new THREE.Vector2();
 const markers = [];
 const meshes = [];
 var w = innerWidth / 1.5, h = innerHeight / 1.5;
 const rect = renderer.domElement.getBoundingClientRect();
+const markerColor = '#' + Math.floor(Math.random() * 16777215).toString(16).padStart(6, '0');
+//const markerColor  = 0xffff00
 
 function animate() {
     requestAnimationFrame(animate);
@@ -139,7 +141,6 @@ function animate() {
     updateCameraRulers();
     renderer.render(scene, camera);
   }
-
 
   </script>
 

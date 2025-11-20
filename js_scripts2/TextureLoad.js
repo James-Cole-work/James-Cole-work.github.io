@@ -78,6 +78,7 @@ document.getElementById('solSelect').addEventListener('change', (e) => {
 
 async function loadSelectedTexture(solName) {
   clearMarkers();
+
   if (sphereGroup) {
     scene.remove(sphereGroup);
     sphereGroup.children.forEach(child => {
@@ -88,10 +89,8 @@ async function loadSelectedTexture(solName) {
     sphereGroup = null;
   }
 
-  if (sphere) {
-    sphere.visible = false;
-  }
-  // --- Fetch lists of textures and coordinate files ---
+  if (sphere) sphere.visible = false;
+
   const textures = textureFilesMap[solName] || [];
   const coords = coordsFilesMap[solName] || [];
 
@@ -101,7 +100,6 @@ async function loadSelectedTexture(solName) {
     sphereGroup = new THREE.Group();
     scene.add(sphereGroup);
 
-    // Load all textures + JSONs in parallel but preserve order  - stops incorrect layering
     const results = await Promise.all(
       textures.map((file, i) =>
         new Promise(resolve => {
@@ -187,7 +185,6 @@ async function loadSelectedTexture(solName) {
     });
 
     console.log(`Single-texture load complete for ${solName}`);
-
   } else {
     console.warn(`No textures found for ${solName}`);
     sphere.visible = false;

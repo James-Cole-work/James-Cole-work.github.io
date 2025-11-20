@@ -37,14 +37,19 @@ function jsonUpload() {
 
   if (uploadedJson) {
                 console.log("Using JSON data:", uploadedJson);
-
+                let position = null;
+                let data = null;
+                let mouse = null;
                 for (let i = 0; i < uploadedJson.length; i++) {
-                
-                const mouse = uploadedJson[i].mouse[0];
 
-                const position = new THREE.Vector3(mouse.x, mouse.y, mouse.z);
+                data = uploadedJson[i];
+                mouse = data.mouse;
+                if (Array.isArray(mouse) && mouse.length > 0){
+                    position = new THREE.Vector3(mouse[0].x, mouse[0].y, mouse[0].z);
+                } else if (mouse && typeof mouse === "object") {
+                    position = new THREE.Vector3(mouse.x, mouse.y, mouse.z);
+                }
 
-                const data = uploadedJson[i];
                 localMarker(position, data);
                 }
 

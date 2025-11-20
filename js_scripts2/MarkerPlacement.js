@@ -18,11 +18,12 @@ function placeMarker(position, data) {
     marker.userData.id = markerit;
     scene.add(marker);
     markers.push(marker);
+
     }
   else{
     const marker = new THREE.Mesh(
       new THREE.CircleGeometry(5, 15),
-      new THREE.MeshBasicMaterial({color: 0xff0000, side: THREE.DoubleSide,   transparent: true, opacity : 1})
+      new THREE.MeshBasicMaterial({color: markerColor, side: THREE.DoubleSide,   transparent: true, opacity : 1})
     )
 
     markerit += 1;
@@ -39,12 +40,16 @@ function placeMarker(position, data) {
 
     scene.add(marker);
     markers.push(marker);
+
+
   }
+
 }
 //draws markers and patches from a local uploaded json file
 function localMarker(position, data) {
   if (data && data.mouse) {
       if (data.mouse.length<2){
+      console.log('marker');
       const starShape = createStarShape(6, 15, 5);
       const geometry = new THREE.ShapeGeometry(starShape);
       const material = new THREE.MeshBasicMaterial({ color: markerColor, side: THREE.DoubleSide });
@@ -58,12 +63,15 @@ function localMarker(position, data) {
       marker.lookAt(center);
       marker.userData = data;
       marker.userData.id = markerit;
+      marker.push(markerColor);
       scene.add(marker);
       markers.push(marker);
     }
     else {
+
       const pointA = data.mouse[0];
       const pointB = data.mouse[1];
+      console.log('patch', pointA, data.mouse);
       const mesh = makeSpherePatchGeo(pointA, pointB);
       meshes.push(mesh);
       scene.add(mesh);
@@ -84,6 +92,7 @@ function localMarker(position, data) {
     }
   }
 }
+
 
 
 

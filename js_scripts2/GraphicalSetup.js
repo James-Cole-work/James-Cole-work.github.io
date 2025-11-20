@@ -1,4 +1,5 @@
 //sets up the initial constraints of the graphical interface canvas.
+let panMarker, tiltMarker;  // declared early
 
 const container = document.getElementById('threejs-canvas');
     const renderer = new THREE.WebGLRenderer({ antialias: true });
@@ -58,19 +59,9 @@ window.addEventListener('wheel', (e) => {
     zoomCamera(e.deltaY * 0.05);
 }, { passive: false });
 
-const label = document.createElement('div');
-label.style.position = 'absolute';
-label.style.top = '95vh';
-label.style.left = '10px';
-label.style.padding = '5px';
-label.style.background = 'rgba(0,0,0,0.5)';
-label.style.color = 'white';
-label.style.fontFamily = 'monospace';
-label.style.zIndex = '100';
-document.body.appendChild(label);
 
 //sets up a red line at 180/-180 to aid user
-const radius = 10;
+const radius = 750;
 const curve = new THREE.CatmullRomCurve3([]);
 
 for (let lat = -90; lat <= 90; lat += 1) {
@@ -81,24 +72,40 @@ for (let lat = -90; lat <= 90; lat += 1) {
   const z = radius * Math.sin(theta) * Math.sin(phi);
   curve.points.push(new THREE.Vector3(x, y, z));
 }
-const tubeGeometry = new THREE.TubeGeometry(curve, 64, 0.02, 8, false);
+const tubeGeometry = new THREE.TubeGeometry(curve,128, 1, 100, false);
 const tubeMaterial = new THREE.MeshBasicMaterial({ color: 0xff0000 });
 const thickLine = new THREE.Mesh(tubeGeometry, tubeMaterial);
 scene.add(thickLine);
 
-
+//creating a hud element
+const hud = document.createElement('div');
+hud.id = 'hud';
+hud.style.position = 'absolute';
+hud.style.top = '0';
+hud.style.left = '0';
+hud.style.width = '100%';
+hud.style.height = '100%';
+hud.style.zIndex = '0'; // lower than UI elements like sidebars/buttons
+hud.style.pointerEvents = 'none';
+document.body.appendChild(hud);
 //sets up ruler in lon and lat
+
 const panBar = document.createElement('div');
 panBar.style.position = 'absolute';
 panBar.style.top = '0px';
 panBar.style.left = '2vh';
-panBar.style.width = '70vw';
+panBar.style.width = '95vw';
 panBar.style.height = '2vh';
 panBar.style.backgroundColor = '#fff';
-panBar.style.zIndex = '101';
-document.body.appendChild(panBar);
+panBar.style.zIndex = '1';
+hud.appendChild(panBar);
 
-const panMarker = document.createElement('div');
+
+
+
+
+
+panMarker = document.createElement('div');
 panMarker.style.position = 'absolute';
 panMarker.style.top = '0px';
 panMarker.style.width = '2px';
@@ -113,10 +120,10 @@ tiltBar.style.left = '0px';
 tiltBar.style.width = '2vh';
 tiltBar.style.height = '90vh';
 tiltBar.style.backgroundColor = '#fff';
-tiltBar.style.zIndex = '101';
-document.body.appendChild(tiltBar);
+tiltBar.style.zIndex = '1';
+hud.appendChild(tiltBar);
 
-const tiltMarker = document.createElement('div');
+tiltMarker = document.createElement('div');
 tiltMarker.style.position = 'absolute';
 tiltMarker.style.left = '0px';
 tiltMarker.style.width = '100%';
@@ -128,11 +135,11 @@ const panLabelContainer = document.createElement('div');
 panLabelContainer.style.position = 'absolute';
 panLabelContainer.style.top = '0.2vh';
 panLabelContainer.style.left = '2.25vw';
-panLabelContainer.style.width = '67.5vw';
+panLabelContainer.style.width = '92.5vw';
 panLabelContainer.style.height = '1.5vh';
-panLabelContainer.style.zIndex = '102';
+panLabelContainer.style.zIndex = '2';
 panLabelContainer.style.pointerEvents = 'none';
-document.body.appendChild(panLabelContainer);
+hud.appendChild(panLabelContainer);
 
 // Label every 45° from -180° to +180°
 for (let angle = -180; angle <= 180; angle += 45) {
@@ -177,7 +184,7 @@ for (let angle = -90; angle <= 90; angle += 30) {
 
 //Update ruler marker as you pan the camera around
 function updateCameraRulers() {
-
+    if (!panMarker || !tiltMarker) return; // wait until they're ready
     const direction = new THREE.Vector3();
     camera.getWorldDirection(direction); 
 
@@ -198,7 +205,16 @@ function updateCameraRulers() {
 
 }
 
-
+const label = document.createElement('div');
+label.style.position = 'absolute';
+label.style.bottom = '8.1vh';
+label.style.left = '1.1vw';
+label.style.padding = '1px';
+label.style.background = 'rgba(0,0,0,0.5)';
+label.style.color = 'white';
+label.style.fontFamily = 'monospace';
+label.style.zIndex = '100';
+document.body.appendChild(label);
 
 //Update Pan Tilt
 renderer.domElement.addEventListener('mousemove', (event) => {
@@ -211,6 +227,7 @@ renderer.domElement.addEventListener('mousemove', (event) => {
     raycaster.setFromCamera(mouse, camera);
 
     const target = sphereGroup || sphere; // fallback to sphere if group is null/undefined
+    if (target) {
     const intersects = raycaster.intersectObject(target, target.type === "Group");
     
     if (intersects.length > 0) {
@@ -219,11 +236,27 @@ renderer.domElement.addEventListener('mousemove', (event) => {
 
         let pan = -spherical.theta * (180 / Math.PI) + 90;  
         let tilt = -spherical.phi * (180 / Math.PI) + 90;   
+        
         if (pan > 180) pan -= 360;
-        label.textContent = `Pan: ${pan.toFixed(2)}, Tilt: ${tilt.toFixed(2)}`;
+        
+        function fmt(num, width = 7, decimals = 2) {
+        const space = "\u2007"; // figure space (same width as digits)
+        
+        // Round and fix decimal places
+        const str = Math.abs(num).toFixed(decimals); 
+        
+        // Add either a minus or a placeholder space for the sign
+        const signed = num < 0 ? `-${str}` : `${space}${str}`;
+        
+        // Pad to fixed width (ensures numbers like 0.00 and 180.00 align)
+        return signed.padStart(width, space);
+        }
+
+        label.textContent = `Pan: ${fmt(pan)}, Tilt: ${fmt(tilt)}`; // space in place of "+"
+
     } else {
         label.textContent = `Pan: --, Tilt: --`;
-    }
+    }}
 });
 
 //Make Gridlines on sphere if required, optional tickbox
@@ -344,3 +377,11 @@ function coordGrid() {
         grid_status = true;
     }
 }
+
+
+//logos and images and such
+
+const panCamLogo = document.createElement('img');
+panCamLogo.id = 'PanCamLogo';
+panCamLogo.src = 'PanCamLogo.png'
+hud.appendChild(panCamLogo);

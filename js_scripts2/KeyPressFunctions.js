@@ -149,14 +149,14 @@ function onMouseMove3(event) { // enfys preview loader
 
 
 function onKeyDownWac(event) { //finds key down for wac
-  if (event.key === "w" && !wPressed) {
+  if (event.key.toLowerCase() === "w" && !wPressed) {
     wPressed = true;
     renderer.domElement.addEventListener("mousemove", onMouseMove1);
   }
 }
 
 function onKeyUpWac(event) {
-  if (event.key === "w") {
+  if (event.key.toLowerCase() === "w") {
     wPressed = false;
     renderer.domElement.removeEventListener("mousemove", onMouseMove1);
 
@@ -171,14 +171,14 @@ function onKeyUpWac(event) {
 
 
 function onKeyDownHrc(event) { // finds key down for hrc
-  if (event.key === "h" && !hPressed) {
+  if (event.key.toLowerCase() === "h" && !hPressed) {
     hPressed = true;
     renderer.domElement.addEventListener("mousemove", onMouseMove2);
   }
 }
 
 function onKeyUpHrc(event) {
-  if (event.key === "h") {
+  if (event.key.toLowerCase() === "h") {
     hPressed = false;
     renderer.domElement.removeEventListener("mousemove", onMouseMove2);
 
@@ -192,14 +192,14 @@ function onKeyUpHrc(event) {
 }
 
 function onKeyDownEnfys(event) {//finds key down for enfys
-  if (event.key === "e" && !ePressed) {
+  if (event.key.toLowerCase() === "e" && !ePressed) {
     ePressed = true;
     renderer.domElement.addEventListener("mousemove", onMouseMove3);
   }
 }
 
 function onKeyUpEnfys(event) {
-  if (event.key === "e") {
+  if (event.key.toLowerCase() === "e") {
     ePressed = false;
     renderer.domElement.removeEventListener("mousemove", onMouseMove3);
 

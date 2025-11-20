@@ -79,6 +79,7 @@ document.getElementById("markerForm").addEventListener("submit", (e) => {
       if (panb > 180) {
       panb  = panb - 360;
       }
+    
   }
   else  {
   var panb = null;
@@ -96,6 +97,99 @@ document.getElementById("markerForm").addEventListener("submit", (e) => {
   suggestionData.push(data);
   closePopup();
 
+
+
+  myList = document.getElementById('markerList');
+
+
+  const row = document.createElement('div');
+  row.className = 'd-flex align-items-center p-2'; // flex layout
+  row.style.transition = 'background-color 0.2s';
+  row.style.width = '100%';
+
+  const left = document.createElement('div');
+  left.className = 'p-1 bg-dark border';
+  left.textContent = 'Suggestion '+data.suggestionid;   // e.g., item number
+
+  // Right column (wider)
+  const center = document.createElement('div');
+  center.className = 'p-1 bg-dark border';
+  center.style.flex = '1';       // takes remaining space
+  const formatted = PTU
+  .filter(v => v != null)              // remove null or undefined
+  .map(v => v.toFixed(2))              // round to 2 decimal places
+  .join(' ');                          // join them with spaces (or commas)
+
+  center.textContent = formatted;
+
+  const deleteBtn = document.createElement('button');
+  deleteBtn.className = 'btn btn-sm btn-danger';
+  deleteBtn.style.width = '3vw';
+  deleteBtn.innerHTML = '&times;'; // × symbol
+  const right = document.createElement('div');
+  right.appendChild(deleteBtn);
+
+
+  deleteBtn.addEventListener('click', (e) => {
+    e.stopPropagation(); // prevents triggering row click
+    info = row.children[0].textContent;
+    info = info.slice(-4);
+    const marker = markers.find(m => m.userData.suggestionid === info);
+    if (marker) { 
+      marker.material.dispose();
+      marker.geometry.dispose();
+      scene.remove(marker);
+    }
+
+    const mesh = meshes.find(m => m.userData === info);
+    if (mesh) { 
+      mesh.material.dispose();
+      mesh.geometry.dispose();
+      scene.remove(mesh);
+    }
+
+    var index = markers.findIndex(m => m.userData.suggestionid === info);
+    if (index !== -1) {
+      markers.splice(index, 1);
+    }
+    index = meshes.findIndex(m => m.userData=== info);
+    if (index !== -1) {
+      meshes.splice(index, 1);
+    }
+    row.remove();        // removes the row from the list
+  });
+   
+
+
+
+  // Combine columns
+  row.appendChild(left);
+  row.appendChild(center);
+  row.appendChild(right);
+
+   row.addEventListener('mouseenter', () => {
+    row.style.backgroundColor = '#f0f8ff';
+    info = row.children[0].textContent;
+    info = info.slice(-4);
+    const marker = markers.find(m => m.userData.suggestionid === info);
+    const material = marker.material;
+    material.color.set(0x0000ff);
+    
+
+  });
+  row.addEventListener('mouseleave', () => {
+    row.style.backgroundColor = '';
+    info = row.children[0].textContent;
+    info = info.slice(-4);
+    const marker = markers.find(m => m.userData.suggestionid === info);
+    const material = marker.material;
+    material.color.set(markerColor);
+  });
+
+  myList.appendChild(row);
+
+  // Save reference
+  //listItems.push({ left, right });
   e.target.reset();
 });
 
@@ -130,6 +224,7 @@ renderer.domElement.addEventListener("click", (event) => {
       s_input.value = zeroPad(suggestionid,4);
       u_input.value = userid;
       lastDrawnPatch = currentPatch;
+      currentPatch.userData = zeroPad(suggestionid,4);
       meshes.push(currentPatch);
       lastDrawnPatch.name = 'currentPatch';
       
@@ -354,10 +449,16 @@ document.getElementById('openDaySelector').addEventListener('click', () => {
         const selectedDay = daySelect.value;
 
         const solSelect = window.document.getElementById('solSelect');
+        const solSelectLabel = window.document.getElementById('solSelectLabel');
         if (solSelect) {
             solSelect.innerHTML = selectedDay+' Loaded';
             solSelect.dispatchEvent(new Event('change', { bubbles: true }));
         }
+        if (solSelectLabel) {
+            solSelectLabel.innerHTML = selectedDay+' Loaded';
+            solSelectLabel.dispatchEvent(new Event('change', { bubbles: true }));
+        }
+
 
         popup.close();
     });

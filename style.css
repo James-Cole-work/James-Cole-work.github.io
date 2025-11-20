@@ -6,7 +6,19 @@ html, body {
     overflow: hidden;
     font-family: sans-serif;
   }
+:root{
+  --darkred: #c01212;
+  --lightred: #ea0d0d;
+  --orange: #ff6200;
 
+  --panCamRed: #b40004;
+  --panCamPurple: #320096;
+  --panCamAqua: #40be9b;
+  --panCamYellow: #f7e100;
+  --panCamPink: #dcaaaa;
+  --panCamDark: #505050;
+  --panCamLight: #999999;
+}
   #container {
 
     display: flex;
@@ -18,8 +30,14 @@ html, body {
     position: relative;
     width: 100vw;
     height: 100vh;
-    background: #222;
-    z-index: 1;
+    background: var(--panCamDark);
+    z-index: 0;
+
+  }
+
+  #ui-container {
+    position: relative;
+    z-index: 1000;
 
   }
 
@@ -28,71 +46,276 @@ html, body {
     position: absolute;  
     top: 2vh;
     left: 2vh;
-    right: 300px; /* leave space for sidebar */
 
     background: #000;
-    z-index: 2;
+    z-index: 1;
     height: 90vh;
-    width: 70vw;
-        border: 1px solid blue;  
+    width: 95vw;
+        border: 1px solid aqua;  
     pointer-events: auto;
 
   }
 
-  #sidebar {
-    margin-left: auto; 
-    top: 0;
-    right: 0;
-    padding: 10px; 
-    width: calc(30vw-10px);
-    height: 100vh;
-    background: #ababab;
-    z-index: 0;
-    display: flex;
-    flex-direction: column;     /* stack buttons vertically */
-    justify-content: flex-start;/* align items to top */
-    align-items: stretch;       /* make children stretch to container width */
 
-  }
 
   button {
     padding: 3vh;
-    background: #444;
+    background: var(--darkred);
     border: 5px #000;
     height: 1vh;
     width: 16.5vw;
-    color: white;
+    color: rgb(255, 255, 255);
     border: none;
     cursor: pointer;
     margin: 3px 0;
-    border-radius: 5px;
-    font-size: 2vh;
+    border-radius: 1px;
     line-height: 2vh;
-    
-
-  }
-
-  checkbox{
-
-    padding: 0;
-  }
   
-  button:hover {
-    background: #9b0f0f;
   }
 
-  .popup {
-    position: absolute;
-    top: 100px;
-    left: 100px;
-    padding: 20px;
-    max-width: 30vw;
-    background: white;
-    border: 2px solid black;
-    z-index: 9999;
-    width: 300px;
-    overflow-wrap: break-word;
+#mySidebar1 {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between; /* push header, content, footer to fill available space */
+  height: 100vh;
+  transition: width 0.5s ease;
+  color: #000000;
+  background-color: #000000;
+  z-index: 10001;
+
+}
+#mySidebar2 {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between; /* push header, content, footer to fill available space */
+  height: 100vh;
+  transition: width 0.5s ease;
+  color: #000000;
+  background-color: #000000;
+
+}
+
+
+#mySidebar1 button, #mySidebar2 button {
+  border-radius: 3px;
+}
+
+#mySidebar1, 
+#mySidebar1 h5, 
+#mySidebar1 p, 
+#mySidebar1 button,
+#mySidebar1 input, 
+#mySidebar1 label {
+  font-size: 1.5vh; /* scales with window height */
+}
+
+#mySidebar1 button, 
+#mySidebar1 input[type="button"],
+#mySidebar1 input[type="submit"] {
+  height: 4vh;     /* adjust buttons to scale automatically */
+  line-height:1vh;
+}
+
+#mySidebar1 button:hover{
+  border-color: #ffffff;
+
+}
+#mySidebar2, 
+#mySidebar2 h5, 
+#mySidebar2 p, 
+#mySidebar2 button,
+#mySidebar2 input, 
+#mySidebar2 label {
+  font-size: 1.5vh; /* scales with window height */
+}
+
+#mySidebar2 button, 
+#mySidebar2 input[type="button"],
+#mySidebar2 input[type="submit"] {
+  height: 4vh;     /* adjust buttons to scale automatically */
+  line-height:1vh;
+}
+
+#mySidebar1 button:hover{
+  border-color: #ffffff;
+
+}
+  #overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.5);
+    z-index: 9998;
+    display: none;
   }
+
+#openBtn1 {
+  position: fixed;  /* so top/right work */
+  top: 0;
+  right: 0;
+  width: 2.5vw;       /* adjust as needed */
+  height: 30vh;      /* scales with window height */
+  padding: 0;        /* no internal spacing */
+  margin: 0;         /* no external spacing */
+  border-radius: 1px;  /* optional */
+  z-index: 1000;    /* make sure it’s on top */
+  transform: translateX(0); 
+  background-color: var(--panCamLight);
+  border-color: #000000;
+  color: #fff;
+}
+
+#openBtn2 {
+  position: fixed;  /* so top/right work */
+  top: 30vh;
+  right: 0;
+  width: 2.5vw;       /* adjust as needed */
+  height: 30vh;      /* scales with window height */
+  padding: 0;        /* no internal spacing */
+  margin: 0;         /* no external spacing */
+  border-radius: 1px;  /* optional */
+  z-index: 10000;    /* make sure it’s on top */
+  transform: translateX(0); 
+  background-color: var(--panCamLight);
+  border-color: #000000;
+  color: #fff;
+
+}
+
+#openBtn1:hover {
+  background-color: var(--panCamPink);
+  border-color: var(--panCamLight);
+  color: black;
+}
+#openBtn2:hover {
+  background-color: var(--panCamPink);
+  border-color: var(--panCamLight);
+  color: black;
+}
+
+#mySidebar1, #openBtn1, #mySidebar2, #openBtn2 {
+  transition: transform 0.3s ease;
+}
+
+#mySidebar1, #mySidebar2 {
+  color: #ffffff;
+  background-color: #000;
+}
+
+
+#login {
+  background-color: var(--panCamRed);
+  border-color: #000000;
+  color: #fff;
+}
+
+#logout {
+  background-color: var(--panCamRed);
+  border-color: #000000;
+  color: #fff;
+}
+
+#openDaySelector {
+  background-color: var(--panCamPurple);
+  border-color: #000000;
+  color: #fff;
+}
+
+#solSelect {
+  color: #fff;
+}
+
+#zoomIn {
+  background-color: var(--panCamAqua);
+  border-color: #000000;
+  color: #fff;
+}
+
+#zoomOut {
+  background-color: var(--panCamAqua);
+  border-color: #000000;
+  color: #fff;
+}
+
+#resetView {
+  background-color: color-mix(in srgb, var(--panCamAqua), black 40%);
+  border-color: #000000;
+  color: #fff;
+}
+
+#targetClear {
+  background-color: #000000;
+  border-color: var(--panCamYellow);
+  color:var(--panCamYellow);
+}
+#targetClear:hover {
+  background-color: var(--panCamYellow);
+  color: black;
+}
+#targetSend {
+  background-color: #000000;
+  border-color: var(--panCamRed);
+  color: var(--panCamRed);
+}
+#targetSend:hover {
+  background-color: var(--panCamRed);
+  color: white;
+}
+
+#download{
+  background-color: var(--panCamPink);
+  border-color: var(--panCamPink);
+}
+
+#upload{
+  background-color: var(--panCamPink);
+  border-color: var(--panCamPink);
+  color: black;
+}
+#upload:hover {
+  border-color: white;
+}
+
+
+  
+
+
+.popup {
+  position: fixed;
+  top: 5%;
+  left: 30%;
+  width: 40vw;
+  height: 90vh;
+  background-color: #fff;
+  border: 1px solid #ccc;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+  display: flex;
+  flex-direction: column;
+  z-index: 1050;
+}
+
+.popup-header {
+  padding: 0.5rem;
+  background-color: #eee;
+  border-bottom: 1px solid #ccc;
+  cursor: move;
+  flex: 0 0 auto; /* fixed height */
+}
+
+.popup-body {
+  flex: 1 1 auto;   /* fills remaining space */
+  overflow-y: auto; /* scrolls if content is too tall */
+  padding: 1rem;
+}
+
+.popup-footer {
+  padding: 1rem;
+  border-top: 1px solid #ccc;
+  flex: 0 0 auto;  /* fixed height */
+  text-align: right;
+}
 
   #markerForm textarea{
     width: 30vw;
@@ -105,8 +328,6 @@ html, body {
     width: 10vw;
 
   }
-
-
 
 /* The container <div> - needed to position the dropdown content */
 .dropdown {
@@ -137,3 +358,13 @@ html, body {
 
 /* Show the dropdown menu (use JS to add this class to the .dropdown-content container when the user clicks on the dropdown button) */
 .show {display:block;}
+
+#PanCamLogo {
+  width: auto;
+  height: 7.5vh;
+  right: 0.5vw;
+  bottom: 0;
+  z-index: 100;
+  pointer-events: none;
+  position: absolute;
+}

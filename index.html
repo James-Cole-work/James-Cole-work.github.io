@@ -7,6 +7,7 @@
     <title>PASTI - PAncam Suggested Target Interface</title>
     <link rel="stylesheet" href="style.css">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
 </head>
 <body>
   <div id = "container">
@@ -16,125 +17,156 @@
         <div id="threejs-canvas"></div>
         
           <div id = 'ui-container'>
-           <p id="solSelectLabel" style="font-size:3vh; position:absolute; bottom:-1vh; left:1vw; width:30vw; color: white">No Sol Selected</p>
+           <p id="solSelectLabel" style="font-size:3vh; position:absolute; bottom:0.1rem; left:45vw; width:10vw; color: white; background-color:#00000085; font-size: 0.5rem; text-align: center;">No Sol Selected</p>
+           <button id="openDaySelector" class = "btn btn-secondary"style="font-size:0.7rem; left: calc(50vw - 1rem); position:absolute; bottom: 2rem; width: 2rem; height: 2rem; z-index: 100000; color: black; background-color:#e3e3e3; "><i class="bi bi-calendar3"></i></button>
+
+            <button id="zoomIn" onclick="zoomIn()"class = "btn btn-secondary" style="left: 96vw; position:absolute; bottom:91vh; width:1vw;height: 4vh;font-size:0.5rem; color: black;background-color:#e3e3e3c8;">+</button>
+          <button id="zoomOut" onclick="zoomOut()" class = "btn btn-secondary"style="left: 96vw; position:absolute; bottom:87vh;width: 1vw ;height: 4vh; font-size:0.5rem; color: black;background-color:#e3e3e3c8;">-</button>
+            <button id="resetZoom" onclick="resetView()" class = "btn btn-secondary"style="left: 96vw; position:absolute; bottom:82.5vh; width: 1vw ;height: 4vh; font-size:0.5rem; color: black; background-color:#e3e3e3c8; border-color: black;" ><i class="bi bi-arrow-clockwise"></i></button>
            
     
 <!-- Sidebar Toggle Buttons -->
-      <button id = "openBtn1" class="btn btn-secondary position-fixed top-0 end-0 m-0" onclick="toggleSidebar(1)" >
-                <
-      </button>
-      <button id = "openBtn2" class="btn btn-secondary position-fixed m-0" onclick="toggleSidebar(2)" >
-        <
-      </button>
+<div class="position-fixed top-0 end-0 d-flex gap-1 m-0">
+  <button id="openBtn1"
+          class="btn btn-secondary icon-btn"
+          onclick="toggleSidebar(1)">
+     <i class="bi bi-gear"></i>
+  </button>
 
-<!-- Sidebar 1 control panel -->
-    <div id="mySidebar1"
-        class="border-start shadow position-fixed top-0 end-0 h-100 p-3 d-flex flex-column"
-        style="width: 25vw; transform: translateX(100%); transition: transform 0.3s ease; z-index: 10001;">
+  <button id="openBtn2"
+          class="btn btn-secondary icon-btn"
+          onclick="toggleSidebar(2)">
+   <i class="bi bi-crosshair" ></i>
+  </button>
 
-      <!-- Header -->
-      <div class="d-flex align-items-center mb-1 border-bottom pb-2" style="font-size:2.5vh;">
-        <button class="closebtn btn"
-                id="closeSidebarBtn"
-                onclick="closeSidebar(1)"
-                style="color:#ffffff; font-size:3vh; width: 3vw;">&times;</button>
-        <h5 class="mb-0 fw-bold" style = 'font-size: 3vh;'>Control Panel</h5>
-      </div>
-
-      <!-- Main content area -->
-      <div class="sidebar-content d-flex flex-column flex-grow-1 justify-content-around">
-
-        <!-- Login / Logout -->
-        <div class="container mb-2 pb-2 border-bottom">
-          <div class="row g-2">
-            <div class="col-6">
-              <button id="login" class="btn btn-primary w-100" style="font-size:2vh; ">Login</button>
-            </div>
-            <div class="col-6">
-              <button id="logout" class="btn btn-danger w-100" style="font-size:2vh;">Logout</button>
-            </div>
-          </div>
-        </div>
-
-        <!-- Day Selector -->
-        <button id="openDaySelector" class="btn btn-outline-secondary w-100 mt-0" style="font-size:2vh;">Select Sol</button>
-        <p id="solSelect" class="text-center mb-0" style="font-size:2vh;">No Sol Selected</p>
-
-        <!-- Zoom Controls -->
-        <div class="container mb-0 pt-2 border-top">
-          <div class="row g-2">
-            <div class="col-6">
-              <button id = 'zoomIn' onclick="zoomIn()" class="btn btn-success w-100" style=" font-size:2vh;">Zoom In</button>
-            </div>
-            <div class="col-6">
-              <button id = 'zoomOut' onclick="zoomOut()" class="btn btn-success w-100" style=" font-size:2vh;">Zoom Out</button>
-            </div>
-          </div>
-        </div>
-
-        <!-- View Controls -->
-        <button id = 'resetView' onclick="resetView()" class="btn btn-warning w-100 ms-0" style=" font-size:2vh;">Reset View</button>
-
-        <!-- Target Controls -->
-        <div class="d-grid gap-1  w-100 ms-0 pt-1 border-top">
-          <button id="targetClear" onclick="clearMarkers()" class="btn btn-outline-danger ms-4" style=" font-size:2vh;">Clear Suggestions</button>
-          <button id="targetSend" class="btn btn-outline-primary ms-4" style=" font-size:2vh;">Send & Confirm Suggestions</button>
-        </div>
-
-        <!-- File Controls -->
-        <div class="mb-0 pt-2 border-top">
-          <button onclick="jsonDownload()" id="download" class="btn btn-info w-75 ms-4 mb-2" style=" font-size:2vh;">Download Local Suggestions</button>
-          <label for="jsonFile" class="form-label" style="font-size:1.8vh;"><br></label>
-          <input type="file" id="jsonFile" accept=".json" class="form-control form-control-sm mb-2" style="font-size:1.8vh;">
-          <input type="button" id="upload" value="Submit Local Suggestions" onclick="jsonUpload()" class="btn btn-secondary w-75 ms-4" style=" font-size:2vh;"></label>
-        </div>
-
-        <!-- Checkboxes -->
-        <div class="form-check mb-0 pt-2 border-top" style="font-size:1.8vh;">
-          <input class="form-check-input" type="checkbox" id="scales" onclick="coordGrid()">
-          <label class="form-check-label" for="scales">Coordinate Gridlines</label>
-        </div>
-        <div class="form-check mb-0 pb-0" style="font-size:1.8vh;">
-          <input class="form-check-input" type="checkbox" id="markerShow" onclick="markerShow()" checked>
-          <label class="form-check-label" for="markerShow">Show Suggestions</label>
-        </div>
-
-      </div>
-
-      <!-- Footer / Instructions -->
-      <div class="mt-auto pt-2 border-top" style="font-size:1.5vh;">
-        <p class="mb-0">
-          <strong>Controls:</strong><br>
-          Double Left Click – Place Marker<br>
-          Shift + Left Click – Draw Patch<br>
-          Right Click – Pan<br>
-          W: WAC FoV<br>
-          H: HRC FoV<br>
-          E: Enfys FoV
-        </p>
-      </div>
-
+    <button id="openBtn3"
+          class="btn btn-secondary icon-btn" onclick="toggleSidebar(3)">
+   
+   <i class="bi bi-question-circle-fill"></i>
+  </button>
+</div>
+      <div id="buttontooltip" 
+     style="position:absolute; display:none; background:#333; color:#fff; padding:5px 10px; border-radius:4px; font-size:1vh; pointer-events:none; z-index:10000;"></div>
     </div>
 
+<!-- Sidebar 1 control panel -->
+<div id="mySidebar1" 
+     class="border-start shadow position-fixed top-0 end-0 h-100 d-flex flex-column"
+     style="width:15vw; transform:translateY(100%); transition: transform 0.3s ease; z-index:10001;background:#232323e2;color:#fff;">
+
+  <!-- Header -->
+    <div class="d-flex align-items-center mb-2 border-bottom px-2" style="font-size:2.5vh;">
+      <button id="closeSidebarBtn1"
+              class="btn btn-sm btn-outline-light d-flex align-items-center justify-content-center"
+              style="width:3vw; height:3vh; font-size:2vh;"
+              onclick="closeSidebar(1)">&times;</button>
+      <h5 class="mb-0 ms-2 fw-bold" style="font-size:2vh;">Control Panel</h5>
+    </div>
+
+  <!-- Main content area -->
+  <div class="sidebar-content d-flex flex-column flex-grow-1 justify-content-start gap-3 p-2 overflow-auto">
+
+
+
+    <!-- Target Controls -->
+    <div class="d-flex gap-0">
+      <button id="targetClear" onclick="clearMarkers()" class="btn btn-outline-danger flex-fill d-flex align-items-center justify-content-center text-nowrap" style="font-size:1.5vh;">Clear Suggestions</button>
+      <button id="targetSend" onclick="" class="btn btn-outline-primary flex-fill d-flex align-items-center justify-content-center text-nowrap" style="font-size:1.5vh;">Send & Confirm</button>
+    </div>
+
+    <!-- File Controls -->
+    <div class="d-flex flex-column gap-1">
+      <button onclick="jsonDownload()" id="download" class="btn btn-info w-100 d-flex align-items-center justify-content-center" style="font-size:1.4vh;">Download Local Suggestions</button>
+      <input type="file" id="jsonFile" accept=".json" class="form-control form-control-sm" style="font-size:1.3vh;">
+      <button id="upload" onclick="jsonUpload()" class="btn btn-secondary w-100 d-flex align-items-center justify-content-center" style="font-size:1.4vh;">Show Local Suggestions</button>
+    </div>
+
+    <!-- Checkboxes -->
+    <div class="d-flex flex-column gap-0" style="font-size:1.5vh;">
+      <label class="form-check form-check-inline">
+        <input class="form-check-input" type="checkbox" id="scales" onclick="coordGrid()">
+        Coordinate Gridlines
+      </label>
+      <label class="form-check form-check-inline">
+        <input class="form-check-input" type="checkbox" id="markerShow" onclick="markerShow()" checked>
+        Show Suggestions
+      </label>
+    </div>
+  <!-- Footer / Instructions -->
+  <div class="border-top p-2" style="border-color: #444; font-size:1.4vh; line-height:1.3; color:#ddd;">
+    <strong>Controls:</strong><br>
+    Double Left Click – Place Marker<br>
+    Shift + Left Click – Draw Patch<br>
+    Right Click – Pan<br>
+    W: WAC FoV | H: HRC FoV | E: Enfys FoV
+  </div>
+
+</div>
+
+
+</div>
 <!-- Sidebar 2 current targets-->
 
-<div id="mySidebar2" class="border-start shadow position-fixed top-0 end-0 h-100 p-3 d-flex flex-column" style="width:25vw; z-index:10001;transform: translateX(100%); transition: transform 0.3s ease; ">
+<div id="mySidebar2"
+     class="border-start shadow position-fixed top-0 end-0"
+     style="
+       width:15vw;
+       transform:translateY(100vh);
+       transition: transform 0.3s ease;
+       z-index:10001;
+       background:#232323e2;
+       color:#fff;
+     ">
+
   <!-- Header -->
-  <div class="d-flex align-items-center mb-1 border-bottom pb-2" style="font-size:2.5vh;">
-    <button class="closebtn btn" onclick="closeSidebar(2)" style="color:#fff; font-size:3vh; width:3vw;">&times;</button>
-    <h5 class="mb-0 fw-bold" style="font-size:3vh;">Current Suggestions</h5>
+  <div class="d-flex align-items-center border-bottom px-2"
+       style="height:6vh; font-size:2.5vh;">
+    <button id="closeSidebarBtn2"
+            class="btn btn-sm btn-outline-light d-flex align-items-center justify-content-center"
+            style="width:3vw; height:3vh; font-size:2vh;"
+            onclick="closeSidebar(2)">&times;</button>
+    <h5 class="mb-0 ms-2 fw-bold" style="font-size:2vh;">
+      Current Suggestions
+    </h5>
   </div>
 
   <!-- Scrollable list -->
-      <div class="sidebar-content flex-grow-1 d-flex flex-column" style="overflow-y:auto;">
-        <div id="markerList" class="d-grid gap-1" 
-            style="grid-template-columns: 1fr; max-height: calc(8 * 3rem); overflow-y:auto;">
-            <!-- Items will go here -->
+  <div id="markerList"
+       class="list-group list-group-flush"
+       style="
+         height: calc(100vh - 6vh);
+         overflow-y: auto;
+       ">
+    <!-- Items go here -->
+  </div>
 
-        </div>
-      </div>
-    </div>
+</div>
 
+<div id="mySidebar3"
+     class="border-start shadow position-fixed top-0 end-0"
+     style="
+       width:15vw;
+       transform:translateY(100vh);
+       transition: transform 0.3s ease;
+       z-index:10001;
+       background:#232323e2;
+       color:#fff;
+     ">
+
+  <!-- Header -->
+  <div class="d-flex align-items-center border-bottom px-2"
+       style="height:6vh; font-size:2.5vh;">
+    <button id="closeSidebarBtn3"
+            class="btn btn-sm btn-outline-light d-flex align-items-center justify-content-center"
+            style="width:3vw; height:3vh; font-size:2vh;"
+            onclick="closeSidebar(3)">&times;</button>
+    <h5 class="mb-0 ms-2 fw-bold" style="font-size:2vh;">
+     WELCOME TO PASTI
+    </h5>
+  </div>
+  Pasti is a.....
+    <img src="PanCamLogo.png" alt="Mars surface" style="width:5vw; object-fit:cover;">
+</div>
 
     </div>
 
@@ -152,16 +184,16 @@
            <div class="popup-body" style="overflow-y: auto; max-height: calc(90vh - 3rem); padding: 1rem;">
         <form id="markerForm">
           <label>Suggestion Title: <input type="text" name="title" /></label><br />
-          <label>Suggestion ID: <input type="text" name="suggestionID" disabled /></label><br />
+          <label>Suggestion ID: <input type="text" name="suggestionID" disabled /></label>
           <label>User ID: <input type="text" name="userID" disabled /></label><br />
-          <label>Suggestion Description:<br/><textarea name="description"></textarea></label><br />
-          <label>Science Intent:<br/><textarea name="intent" ></textarea></label><br />
+          <label>Suggestion Description:<br/><textarea name="description" style = 'height: 7.5vh'></textarea></label><br />
+          <label>Science Intent:<br/><textarea name="intent" style = 'height: 7.5vh'></textarea> </textarea></label><br />
 
-          <label>HRC:<input type="checkbox" name="HRC" /></label>
-          <label>Enfys:<input type="checkbox" name="enfys" /></label><br />
-          <label>WAC RGB:<input type="checkbox" name="wacRGB" /></label>
-          <label>WAC Multispectral:<input type="checkbox" name="wacmulti" /></label><br />
-          <label>Mosaic:<input type="checkbox" name="mosaic" /></label><br />
+          <label>HRC: <input type="checkbox" name="HRC" /></label>
+          <label>Enfys: <input type="checkbox" name="enfys" /></label>
+          <label>WAC RGB: <input type="checkbox" name="wacRGB" /></label>
+          <label>WAC Multispectral: <input type="checkbox" name="wacmulti" /></label>
+          <label>Mosaic: <input type="checkbox" name="mosaic" /></label><br />
 
           <label>Keywords: 
             <select title = "Select Keywords"id="keyword_items"  style = 'height: 4vh'>
@@ -171,20 +203,25 @@
             <option value="kw2">Keyword 2</option>
             <option value="kw3">Keyword 3</option>
             </select>
-        </label><br />
+        </label>
           <label><input type="text" name="selectedkeyywords" disabled /></label><br />
 
-          <label>Other Notes:<br/><textarea name="notes"></textarea></label><br />
+          <label>Other Notes:<br/><textarea name="notes"  style = 'height: 5vh'></textarea></textarea></label><br />
 
-          <button type="submit" style = 'margin-bottom: 5px;'>Save</button>
-          <button type="button" onclick="closePopup()">Cancel</button>
+          <button type="submit" style = 'margin-bottom: 5px; width: 10vw; height: 5vh;'>Save</button>
+          <button type="button" style = 'margin-bottom: 5px; width: 10vw; height: 5vh;' onclick="cancelPopup()">Cancel</button>
         </form>
       </div>
 
 
       
-      <div id="tooltip" style="display:none; position:absolute; background:white; border:1px solid black; padding:5px; pointer-events:none; z-index:100; overflow-wrap: break-word; max-width:30vw"></div>
+     
 </div>        
+<div id="tooltip" style="display:none; position: fixed; pointer-events:none; background:white; border:1px solid black; padding:5px; z-index:2000; overflow-wrap: break-word; max-width:30vw"></div>
+
+
+
+
 <!-- Three.js core -->
 <script src="https://unpkg.com/three@0.128.0/build/three.min.js"></script>
 <!-- OrbitControls -->
@@ -224,10 +261,13 @@
 // Initial variables required before anything else can take place.
 const raycaster = new THREE.Raycaster();
 const mouse = new THREE.Vector2();
-const markers = [];
-const meshes = [];
+let markers = [];
+let meshes = [];
 var w = innerWidth / 1.5, h = innerHeight / 1.5;
 const rect = renderer.domElement.getBoundingClientRect();
+renderer.domElement.tabIndex = 0;
+renderer.domElement.style.outline = "none";
+renderer.domElement.focus();
 //const markerColor = '#' + Math.floor(Math.random() * 16777215).toString(16).padStart(6, '0');
 const markerColor = '#'+'40be9b'
 
@@ -239,23 +279,52 @@ threejsContainer.insertBefore(hud, threejsContainer.firstChild);
 function toggleSidebar(num) {
   const sidebar = document.getElementById(`mySidebar${num}`);
   const openbtn = document.getElementById(`openBtn${num}`);
-  const isOpen = sidebar.style.transform === "translateX(0%)";
+  const isOpen = sidebar.style.transform === "translateY(60vh)";
 
-  openbtn.innerHTML = isOpen? '<':'>';
-  sidebar.style.transform = isOpen ? "translateX(100%)" : "translateX(0%)";
-  openbtn.style.transform = isOpen ? "translateX(0)" : "translateX(-25vw)";
+  //openbtn.innerHTML = isOpen? '<':'>';
+  sidebar.style.transform = isOpen ? "translateY(0)" : "translateY(60vh)";
 }
 
 function closeSidebar(num) {
   const sidebar = document.getElementById(`mySidebar${num}`);
   const openbtn = document.getElementById(`openBtn${num}`);
-  sidebar.style.transform = 'translateX(100%)';
-  openbtn.style.transform = 'translateX(0)'
+  sidebar.style.transform = 'translateY(100vh)';
 
-  const isOpen = sidebar.style.transform === "translateX(100%)";
-  openbtn.innerHTML = isOpen? '<':'>';
+  const isOpen = sidebar.style.transform === "translateY(60vh)";
+  //openbtn.innerHTML = isOpen? '<':'>';
 
 }
+
+const tooltip = document.getElementById('buttontooltip');
+const buttons = [
+  { el: document.getElementById('openBtn1'), text: 'Control Panel' },
+  { el: document.getElementById('openBtn2'), text: 'Current Suggestions' },
+  { el: document.getElementById('openBtn3'), text: 'TBD' },
+];
+
+
+buttons.forEach(btn => {
+  btn.el.addEventListener('mouseenter', (e) => {
+    tooltip.innerText = btn.text;
+    tooltip.style.display = 'block';
+
+
+    tooltip.style.left = e.pageX - 40  + 'px';
+    
+    tooltip.style.top = e.pageY -40 + 'px';
+
+  });
+
+  btn.el.addEventListener('mousemove', (e) => {
+
+    tooltip.style.left = e.pageX -40 + 'px';
+    tooltip.style.top = e.pageY - 40 + 'px';
+  });
+
+  btn.el.addEventListener('mouseleave', () => {
+    tooltip.style.display = 'none';
+  });
+});
 
 function animate() {
     requestAnimationFrame(animate);
@@ -264,7 +333,7 @@ function animate() {
     renderer.render(scene, camera);
   }
 
-  const popup = document.getElementById("popupForm");
+const popup = document.getElementById("popupForm");
 const header = document.getElementById("popupHeader");
 
 let offsetX = 0, offsetY = 0;

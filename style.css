@@ -18,6 +18,7 @@ html, body {
   --panCamPink: #dcaaaa;
   --panCamDark: #505050;
   --panCamLight: #999999;
+  --openButtons: #bc000077;
 }
   #container {
 
@@ -30,6 +31,7 @@ html, body {
     position: relative;
     width: 100vw;
     height: 100vh;
+
     background: var(--panCamDark);
     z-index: 0;
 
@@ -44,14 +46,16 @@ html, body {
 
   #threejs-canvas {
     position: absolute;  
-    top: 2vh;
-    left: 2vh;
+
 
     background: #000;
     z-index: 1;
-    height: 90vh;
-    width: 95vw;
-        border: 1px solid aqua;  
+    height: 98vh;
+    width: calc(100vw - 2vh);
+
+    left: 2vh;
+    top: 2vh;
+    border: 1px solid rgb(255, 255, 255);  
     pointer-events: auto;
 
   }
@@ -62,7 +66,7 @@ html, body {
     padding: 3vh;
     background: var(--darkred);
     border: 5px #000;
-    height: 1vh;
+    height: 3vh;
     width: 16.5vw;
     color: rgb(255, 255, 255);
     border: none;
@@ -76,28 +80,88 @@ html, body {
 #mySidebar1 {
   display: flex;
   flex-direction: column;
-  justify-content: space-between; /* push header, content, footer to fill available space */
-  height: 100vh;
+  height: 60vh;
   transition: width 0.5s ease;
   color: #000000;
-  background-color: #000000;
+  background-color: #00000088;
   z-index: 10001;
+  right:0;
+  bottom:0;
 
 }
 #mySidebar2 {
   display: flex;
   flex-direction: column;
-  justify-content: space-between; /* push header, content, footer to fill available space */
-  height: 100vh;
+  height: 40vh;
   transition: width 0.5s ease;
   color: #000000;
   background-color: #000000;
+  z-index: 10002;
+  right:0;
+  bottom:0;
+
+}
+#mySidebar3 {
+  display: flex;
+  flex-direction: column;
+  height: 40vh;
+  transition: width 0.5s ease;
+  color: #000000;
+  background-color: #000000;
+  z-index: 10002;
+  right:0;
+  bottom:0;
 
 }
 
 
+button.btn-secondary {
+  line-height: 1; /* ensures text is vertically centered */
+  display: inline-flex; /* ensures flex alignment works */
+  align-items: center; /* vertical centering */
+  justify-content: center; /* horizontal centering */
+  font-size: 1rem; /* adjust as needed */
+  padding: 0.375rem 0.75rem; /* default Bootstrap padding */
+}
+
+/* Fix the alignment of the rows */
+.sidebar-content {
+    height: calc(40vh - 5vh); /* sidebar height - header height */
+    overflow-y: auto;
+    overflow-x: hidden;
+}
+
+#markerList {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    font-size: 1.2vh;
+    overflow: visible; /* IMPORTANT */
+}
+#markerList > div {
+    width: 100%;
+    box-sizing: border-box;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+/* Force the buttons in the list to be small and ignore global padding */
+#markerList button {
+    height: 2.5vh !important;
+    width: 2.5vh !important;
+    padding: 0 !important;
+    margin: 2px !important;
+    line-height: 1 !important;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.2vh !important;
+    color: white;
+    flex-shrink: 0;
+}
+
 #mySidebar1 button, #mySidebar2 button {
-  border-radius: 3px;
+  border-radius: 1vh;
 }
 
 #mySidebar1, 
@@ -106,15 +170,10 @@ html, body {
 #mySidebar1 button,
 #mySidebar1 input, 
 #mySidebar1 label {
-  font-size: 1.5vh; /* scales with window height */
+  font-size: 1vh; /* scales with window height */
 }
 
-#mySidebar1 button, 
-#mySidebar1 input[type="button"],
-#mySidebar1 input[type="submit"] {
-  height: 4vh;     /* adjust buttons to scale automatically */
-  line-height:1vh;
-}
+
 
 #mySidebar1 button:hover{
   border-color: #ffffff;
@@ -126,14 +185,15 @@ html, body {
 #mySidebar2 button,
 #mySidebar2 input, 
 #mySidebar2 label {
-  font-size: 1.5vh; /* scales with window height */
+  font-size:1vh; /* scales with window height */
 }
 
 #mySidebar2 button, 
 #mySidebar2 input[type="button"],
 #mySidebar2 input[type="submit"] {
-  height: 4vh;     /* adjust buttons to scale automatically */
-  line-height:1vh;
+  height: 2vh;     /* adjust buttons to scale automatically */
+  line-height:0.5vh;
+
 }
 
 #mySidebar1 button:hover{
@@ -153,35 +213,60 @@ html, body {
 
 #openBtn1 {
   position: fixed;  /* so top/right work */
-  top: 0;
-  right: 0;
-  width: 2.5vw;       /* adjust as needed */
-  height: 30vh;      /* scales with window height */
+  bottom: 0;
+  right: 3rem;
+  width: 1.5rem;       /* adjust as needed */
+  height: 1.5rem;      /* scales with window height */
   padding: 0;        /* no internal spacing */
   margin: 0;         /* no external spacing */
   border-radius: 1px;  /* optional */
   z-index: 1000;    /* make sure it’s on top */
-  transform: translateX(0); 
-  background-color: var(--panCamLight);
+  transform: translateY(0); 
+  background-color: var(--openButtons);
   border-color: #000000;
   color: #fff;
 }
 
 #openBtn2 {
   position: fixed;  /* so top/right work */
-  top: 30vh;
-  right: 0;
-  width: 2.5vw;       /* adjust as needed */
-  height: 30vh;      /* scales with window height */
+  bottom: 0;
+  right: 1.5rem;
+  width: 1.5rem;       /* adjust as needed */
+  height: 1.5rem;      /* scales with window height */
   padding: 0;        /* no internal spacing */
   margin: 0;         /* no external spacing */
   border-radius: 1px;  /* optional */
   z-index: 10000;    /* make sure it’s on top */
-  transform: translateX(0); 
-  background-color: var(--panCamLight);
+  transform: translateY(0); 
+  background-color: var(--openButtons);
   border-color: #000000;
   color: #fff;
 
+}
+
+#openBtn3 {
+  position: fixed;  /* so top/right work */
+  bottom: 0;
+  right: 0;
+  width: 1.5rem;       /* adjust as needed */
+  height: 1.5rem;      /* scales with window height */
+  padding: 0;        /* no internal spacing */
+  margin: 0;         /* no external spacing */
+  border-radius: 1px;  /* optional */
+  z-index: 10000;    /* make sure it’s on top */
+  transform: translateY(0); 
+  background-color: var(--openButtons);
+  border-color: #000000;
+  color: #fff;
+
+}
+.icon-btn {
+  font-size: 2vh;   /* controls button + icon size */
+}
+
+.icon-btn i {
+  font-size: 0.7em;   /* icon matches button text size */
+  line-height: 1;
 }
 
 #openBtn1:hover {
@@ -194,6 +279,11 @@ html, body {
   border-color: var(--panCamLight);
   color: black;
 }
+#openBtn3:hover {
+  background-color: var(--panCamPink);
+  border-color: var(--panCamLight);
+  color: black;
+}
 
 #mySidebar1, #openBtn1, #mySidebar2, #openBtn2 {
   transition: transform 0.3s ease;
@@ -201,7 +291,8 @@ html, body {
 
 #mySidebar1, #mySidebar2 {
   color: #ffffff;
-  background-color: #000;
+  background-color: #09f319cf;
+  font-size: 5vh;
 }
 
 
@@ -225,6 +316,7 @@ html, body {
 
 #solSelect {
   color: #fff;
+  background-color: var(--panCamAqua);
 }
 
 #zoomIn {
@@ -255,13 +347,13 @@ html, body {
   color: black;
 }
 #targetSend {
-  background-color: #000000;
-  border-color: var(--panCamRed);
-  color: var(--panCamRed);
+  background-color: var(--panCamRed);
+  border-color: white;
+  color: white;
 }
 #targetSend:hover {
-  background-color: var(--panCamRed);
-  color: white;
+  background-color: black;
+  color: var(--panCamRed);
 }
 
 #download{
@@ -284,16 +376,18 @@ html, body {
 
 .popup {
   position: fixed;
-  top: 5%;
-  left: 30%;
-  width: 40vw;
-  height: 90vh;
+  top: 10vh;
+  left: 25vw;
+  width: 30vw;
+  height: 60vh; /* fixed height */
+  display: flex;
+  flex-direction: column;
+  font-size: 0.75vh;
   background-color: #fff;
   border: 1px solid #ccc;
   box-shadow: 0 4px 12px rgba(0,0,0,0.2);
-  display: flex;
-  flex-direction: column;
   z-index: 1050;
+  max-height: 80vh; /* never taller than 80% of viewport */
 }
 
 .popup-header {
@@ -302,6 +396,7 @@ html, body {
   border-bottom: 1px solid #ccc;
   cursor: move;
   flex: 0 0 auto; /* fixed height */
+  font-size: 1vh;
 }
 
 .popup-body {
@@ -318,7 +413,7 @@ html, body {
 }
 
   #markerForm textarea{
-    width: 30vw;
+    width: 15vw;
     height: 10vh;
     resize: vertical; /* optional: allow vertical resize only */
     overflow: auto;

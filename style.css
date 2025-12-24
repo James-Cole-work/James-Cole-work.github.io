@@ -78,9 +78,9 @@ html, body {
   }
 
 #mySidebar1 {
-  display: flex;
+  display: absolute;
   flex-direction: column;
-  height: 60vh;
+  height: 40vh;
   transition: width 0.5s ease;
   color: #000000;
   background-color: #00000088;
@@ -289,12 +289,6 @@ button.btn-secondary {
   transition: transform 0.3s ease;
 }
 
-#mySidebar1, #mySidebar2 {
-  color: #ffffff;
-  background-color: #09f319cf;
-  font-size: 5vh;
-}
-
 
 #login {
   background-color: var(--panCamRed);
@@ -372,7 +366,23 @@ button.btn-secondary {
 
 
   
+.sidebar-content {
+  flex: 1 1 auto;
+  min-height: 0;
+  font-size: clamp(0.65rem, 1.2vh, 0.9rem);
+}
 
+.sidebar-content button,
+.sidebar-content input {
+  font-size: inherit;
+  padding: 0.25em;
+  min-height: 0;
+}
+
+.sidebar-content .form-check-inline {
+    margin-right: 0.5rem; /* smaller gap */
+    margin-bottom: 0;     /* remove vertical gap */
+}
 
 .popup {
   position: fixed;

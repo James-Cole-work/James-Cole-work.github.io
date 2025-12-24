@@ -419,72 +419,57 @@ dom.addEventListener("mousemove", (event) => {
   const intersects = raycaster.intersectObjects(markers);
   const tooltip = document.getElementById("tooltip");
 
-  if (intersects.length > 0) {
+if (intersects.length > 0) {
     const marker = intersects[0].object;
     const data = marker.userData;
 
-
-    if (data.position[2]){
-          TLPan = data.position[0].toFixed(2)
-          TLTilt = data.position[1].toFixed(2)
-          BRPan = data.position[2].toFixed(2)
-          BRTilt = data.position[3].toFixed(2)
-
-    }
-    else{           
-          TLPan = data.position[0].toFixed(2)
-          TLTilt = data.position[1].toFixed(2)
-          BRPan = data.position[2]
-          BRTilt = data.position[3]
-    }
-
-    tooltip.style.left = `${event.clientX + 10}px`;
-    tooltip.style.top = `${event.clientY + 10}px`;
     tooltip.style.display = "block";
-    tooltip.style.maxWidth = "35vw";
+
+    // Set content first
     tooltip.innerHTML = `
       <strong>Suggestion Title: ${data.title|| "Untitled"}</strong><br>
       <em>User ID: ${data.userid || "No description"}</em><br>
       <em>Suggestion ID: ${data.suggestionid || "No description"}</em><br>
       <em>Suggestion Description: ${data.description || "No description"}</em><br>
       <em>Science Intent: ${data.intent || "No description"}</em><br>
-      <em>TL Pan Angle: ${TLPan},</em>
-      <em>TL Tilt Angle: ${TLTilt}</em><br>
-      <em>BR Pan Angle: ${BRPan},</em>
-      <em>BR Tilt Angle: ${BRTilt}</em><br>
-      <label>HRC: <input type="checkbox" disabled ${data.hrc ? "checked" : ""} />
-      </label>
-      <label>Enfys: <input type="checkbox" disabled ${data.enfys ? "checked" : ""} />
-      </label><br>
-      <label>WAC RGB: <input type="checkbox" disabled ${data.wacrgb ? "checked" : ""} />
-      </label>
-      <label>WAC Multi: <input type="checkbox" disabled ${data.wacmulti ? "checked" : ""} />
-      </label><br>
-      <label>Mosaic: <input type="checkbox" disabled ${data.mosaic ? "checked" : ""} />
-      </label><br>
+      <label>HRC: <input type="checkbox" disabled ${data.hrc ? "checked" : ""} /></label>
+      <label>Enfys: <input type="checkbox" disabled ${data.enfys ? "checked" : ""} /></label><br>
+      <label>WAC RGB: <input type="checkbox" disabled ${data.wacrgb ? "checked" : ""} /></label>
+      <label>WAC Multi: <input type="checkbox" disabled ${data.wacmulti ? "checked" : ""} /></label><br>
+      <label>Mosaic: <input type="checkbox" disabled ${data.mosaic ? "checked" : ""} /></label><br>
       <em>Keywords: ${data.keywords || "No description"}</em><br>
       <em>Other Notes: ${data.notes || "No description"}</em><br>
     `;
-    // Tooltip position adjustment
+
+    // Force reflow by reading offsetHeight
+    tooltip.offsetHeight;
+
     const tooltipRect = tooltip.getBoundingClientRect();
-    const padding = 10; // gap between cursor and tooltip
+    const padding = 10;
 
     let left = event.clientX + padding;
     let top = event.clientY + padding;
 
-    // Flip horizontally if going past the right edge
+    // Flip horizontally if it goes past right edge
     if (left + tooltipRect.width > window.innerWidth) {
-      left = event.clientX - tooltipRect.width - padding;
+        left = event.clientX - tooltipRect.width - padding;
     }
-    // Flip vertically if going past the bottom edge
-    if (top + tooltipRect.height > window.innerHeight) {
-      top = event.clientY - tooltipRect.height - padding;
-    }
-   
-  } else {
-    tooltip.style.display = "none";
 
-  }
+    // Flip vertically if it goes past bottom edge
+    if (top + tooltipRect.height > window.innerHeight) {
+        top = event.clientY - tooltipRect.height - padding;
+    }
+
+    // Prevent tooltip from going off the top/left edges
+    left = Math.max(padding, left);
+    top = Math.max(padding, top);
+
+    tooltip.style.left = `${left}px`;
+    tooltip.style.top = `${top}px`;
+} else {
+    tooltip.style.display = "none";
+}
+
 });
 
 

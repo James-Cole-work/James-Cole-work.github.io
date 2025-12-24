@@ -151,7 +151,7 @@ panLabelContainer.style.position = 'absolute';
 panLabelContainer.style.top = '0.2vh';
 panLabelContainer.style.left = '4vh';
 panLabelContainer.style.width = '97vw';
-panLabelContainer.style.height = '2vh';
+panLabelContainer.style.height = panBar.style.height;
 panLabelContainer.style.zIndex = '2';
 panLabelContainer.style.pointerEvents = 'none';
 hud.appendChild(panLabelContainer);
@@ -160,7 +160,9 @@ hud.appendChild(panLabelContainer);
 for (let angle = -180; angle <= 180; angle += 45) {
   const label = document.createElement('div');
   label.style.position = 'absolute';
-  label.style.fontSize = '0.4em';
+    const containerHeight = panLabelContainer.clientHeight;
+    label.style.fontSize = `${containerHeight * 0.8}px`; // 80% of container height
+    label.style.lineHeight = `${containerHeight}px`;
   label.style.color = '#000';
   label.style.fontFamily = 'monospace';
   label.style.top = '0';
@@ -175,7 +177,7 @@ const tiltLabelContainer = document.createElement('div');
 tiltLabelContainer.style.position = 'absolute';
 tiltLabelContainer.style.top = '3vh';
 tiltLabelContainer.style.left = '0vw';
-tiltLabelContainer.style.width = '3vh';
+tiltLabelContainer.style.width = tiltBar.style.width;
 tiltLabelContainer.style.height = '95vh';
 tiltLabelContainer.style.zIndex = '102';
 tiltLabelContainer.style.pointerEvents = 'none';
@@ -186,13 +188,15 @@ for (let angle = -90; angle <= 90; angle += 30) {
   const label = document.createElement('div');
   label.style.position = 'absolute';
   label.style.left = '0.1vh';
-  label.style.fontSize = '0.4em';
+    const containerWidth = tiltLabelContainer.clientWidth;
+    label.style.fontSize = `${containerWidth * 0.8}px`; // 80% of container height
+    label.style.lineHeight = `${containerWidth}px`;
   label.style.color = '#000';
   label.style.fontFamily = 'monospace';
   label.textContent = `${angle}°`;
   const norm = (angle+90) / 180; // map +90..-90 to 0..1
-  label.style.top = `${norm * 100}%`;
-  label.style.transform = 'translateY(-50%)';
+  label.style.top = `${norm * 99}%`;
+  label.style.transform = 'translateX(-20%) rotate(-90deg)';
   tiltLabelContainer.appendChild(label);
 }
 
@@ -436,4 +440,3 @@ const panCamLogo = document.createElement('img');
 panCamLogo.id = 'PanCamLogo';
 panCamLogo.src = 'PanCamLogo.png'
 hud.appendChild(panCamLogo);
-

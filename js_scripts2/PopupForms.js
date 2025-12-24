@@ -1,5 +1,4 @@
 
-
 const zeroPad = (num, places) => String(num).padStart(places, '0')
 
 const userid = 'Cole_User'; //needs to be updated and gathered from login page credentials
@@ -11,10 +10,10 @@ let lastClickPosition = null;
 const suggestionData = [];
 let markerType = null;
 let clicks = [];
-
+let editingSuggestionId = null; // null = create mode, otherwise edit mode
 
 window.addEventListener('dblclick', (event) => {
-
+    if (editingSuggestionId !== null) return; // ⛔ BLOCK create-mode
     const rect = renderer.domElement.getBoundingClientRect();
     mouse.x = ((event.clientX - rect.left) / rect.width) * 2 - 1;
     mouse.y = -((event.clientY - rect.top) / rect.height) * 2 + 1;
@@ -36,9 +35,16 @@ window.addEventListener('dblclick', (event) => {
     if (intersects.length > 0) {
         lastClickPosition = intersects[0].point.clone();
         clicks.push(lastClickPosition);
-        showPopup(mouse.x, mouse.y);
+        const screenWidth = window.screen.width;
+        const screenHeight = window.screen.height;
+
+        // Center coordinates
+        const centerX = screenWidth / 5;
+        const centerY = screenHeight / 10;
+        showPopup(centerX, centerY);
     }
 });
+
 
 
 
@@ -46,154 +52,276 @@ window.addEventListener('dblclick', (event) => {
 document.getElementById("markerForm").addEventListener("submit", (e) => {
   e.preventDefault();
 
-  const rect = renderer.domElement.getBoundingClientRect();
-  mouse.x = ((event.clientX - rect.left) / rect.width) * 2 - 1;
-  mouse.y = -((event.clientY - rect.top) / rect.height) * 2 + 1;
-
   const formData = new FormData(e.target);
   const data = Object.fromEntries(formData.entries());
 
   data.userid = userid;
-  data.suggestionid = zeroPad(suggestionid, 4);
 
+  // Determine if we are in edit mode
+  const isEdit = editingSuggestionId !== null;
+
+  if (isEdit) {
+    data.suggestionid = editingSuggestionId; // preserve ID
+  } else {
+    data.suggestionid = zeroPad(suggestionid, 4);
+  }
+
+  // Checkboxes
   data.enfys = formData.has("enfys");
   data.hrc = formData.has("HRC");
   data.wacrgb = formData.has("wacRGB");
   data.wacmulti = formData.has("wacmulti");
   data.mosaic = formData.has("mosaic");
+  console.log(clicks)
+  // Use correct click data
+  const clickData = isEdit
+    ? suggestionData.find(d => d.suggestionid === editingSuggestionId)?.mouse
+    : clicks;
 
-
-  const spherical = new THREE.Spherical();
-  spherical.setFromVector3(clicks[0]);
-  var pant = -spherical.theta * (180/Math.PI) + 90; 
-  var tiltt = - spherical.phi * (180/Math.PI) + 90 ;  
-  if (pant > 180) {
-    pant  = pant - 360;
+  if (!clickData || clickData.length === 0) {
+    console.error("Submit aborted: no click data");
+    return;
   }
-  
-  if (clicks.length >1){
-      const spherical = new THREE.Spherical();
-      spherical.setFromVector3(clicks[1]);
-      var panb = -spherical.theta * (180/Math.PI) + 90;
-      var tiltb = - spherical.phi * (180/Math.PI) + 90 ;  
-      if (panb > 180) {
-      panb  = panb - 360;
+
+  // Convert clicks to PTU
+  const sphericalA = new THREE.Spherical();
+  sphericalA.setFromVector3(clickData[0]);
+  pant = sphericalA.theta * (180 / Math.PI) - 90;  
+  tiltt = sphericalA.phi * (180 / Math.PI) - 90;   
+        
+  if (pant > -270 && pant < -180) pant += 360;
+
+  let panb = null;
+  let tiltb = null;
+
+  if (clickData.length > 1) {
+    console.log(clickData.length)
+    const sphericalB = new THREE.Spherical();
+    sphericalB.setFromVector3(clickData[1]);
+    panb = sphericalB.theta * (180 / Math.PI) - 90;  
+    tiltb = sphericalB.phi * (180 / Math.PI) - 90;   
+
+    if (panb > -270 && panb < -180) panb += 360;
+  }
+
+  data.position = [pant, tiltt, panb, tiltb];
+
+  data.mouse = clickData;
+
+  if (isEdit) {
+    // ✏️ EDIT EXISTING
+    const index = suggestionData.findIndex(d => d.suggestionid === editingSuggestionId);
+    if (index !== -1) {
+      suggestionData[index] = { ...suggestionData[index], ...data };
+
+      // Update marker userData
+      const marker = markers.find(m => m.userData.suggestionid === editingSuggestionId);
+      if (marker) marker.userData = suggestionData[index];
+
+      // Update list row
+      const rows = Array.from(document.getElementById('markerList').children);
+      const row = rows.find(r => r.children[0].textContent.endsWith(editingSuggestionId));
+      if (row) {
+        row.children[1].textContent = data.position
+          .filter(v => v != null)
+          .map(v => v.toFixed(2))
+          .join(' ');
       }
+    }
+
+    editingSuggestionId = null;
+  } else {
+    // ➕ CREATE NEW
+    placeMarker(lastClickPosition, data);
+    suggestionData.push(data);
+    suggestionid++;
+
+    // Add new row to the list
+    const myList = document.getElementById('markerList');
+    const row = document.createElement('div');
+
+    row.style.transition = 'background-color 0.2s';
+    row.style.width = '100%';
+    row.style.minWidth = '0';
+    row.className = 'd-flex align-items-center py-1 px-2 border-bottom border-secondary';
+    row.style.width = '100%';
+    row.style.minHeight = '4vh'; // Gives a consistent, small height
+    attachRowHoverLogic(row);
+
+
+    const left = document.createElement('div');
+    left.className = 'fw-bold me-2'; // Font weight bold, margin end 2
+    left.style.width = '4vw';
+    left.textContent = 'S. ' + data.suggestionid;
     
+
+    const center = document.createElement('div');
+    center.className = 'flex-grow-1';
+    center.textContent = data.position
+      .filter(v => v != null)
+      .map(v => v.toFixed(2))
+      .join(' ');
+
+    const editBtn = document.createElement('button');
+    editBtn.className = 'btn btn-outline-secondary p-1';
+    editBtn.style.width = '2rem';
+    editBtn.innerHTML = '&#10247;';
+
+    const deleteBtn = document.createElement('button');
+    deleteBtn.className = 'btn btn-outline-danger p-1';
+    deleteBtn.style.width = '2rem';
+    deleteBtn.innerHTML = '&times;';
+
+    [editBtn, deleteBtn].forEach(btn => {
+    btn.className = 'btn btn-sm p-0 d-flex align-items-center justify-content-center';
+    btn.style.width = '1.5vw';
+    btn.style.height = '1.5vw';
+    btn.style.fontSize = '1vh';
+    btn.style.padding = '0'; 
+    btn.style.margin = '0 2px';
+    btn.style.lineHeight = '1';
+    });
+
+    const right = document.createElement('div');
+    right.appendChild(editBtn);
+    right.appendChild(deleteBtn);
+    right.className = 'btn-group btn-group-sm';
+    row.appendChild(left);
+    row.appendChild(center);
+    row.appendChild(right);
+    myList.appendChild(row);
+
+    // Add listeners
+    editBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const info = row.children[0].textContent.slice(-4);
+      const d = suggestionData.find(d => d.suggestionid === info);
+      if (!d) return;
+      editingSuggestionId = info;
+      lastClickPosition = null;
+      clicks = d.mouse || [];
+      populatePopup(d);
+      showPopup(0.5, 0.5);
+    });
+
+    deleteBtn.addEventListener('click', (e) => {
+    e.stopPropagation(); // prevent triggering row click
+
+    // Get the suggestion ID from the row
+    let info = row.children[0].textContent.slice(-4);
+
+    // Remove matching markers from the scene and the array
+    markers
+      .filter(m => m.userData.suggestionid === info)
+      .forEach(m => {
+        if (m.material) m.material.dispose();
+        if (m.geometry) m.geometry.dispose();
+        scene.remove(m);
+      });
+    markers = markers.filter(m => m.userData.suggestionid !== info);
+
+    // Remove matching meshes from the scene and the array
+    meshes
+      .filter(m => m.userData === info)
+      .forEach(m => {
+        if (m.material) m.material.dispose();
+        if (m.geometry) m.geometry.dispose();
+        scene.remove(m);
+      });
+    meshes = meshes.filter(m => m.userData !== info);
+
+    // Remove the suggestion data
+    const index = suggestionData.findIndex(d => d.suggestionid === info);
+    if (index !== -1) suggestionData.splice(index, 1);
+
+    // Remove the row from the list
+    row.remove();
+
+    // Reindex remaining suggestions to remove gaps
+    reindexSuggestions();
+    });
   }
-  else  {
-  var panb = null;
-  var tiltb =null; 
-  }  
 
-  placeMarker(lastClickPosition,data);
-
-  const PTU = [pant, tiltt, panb, tiltb];
-
-  data.position  = PTU;
-  data.mouse = clicks;
-  suggestionid = suggestionid +1;
-
-  suggestionData.push(data);
   closePopup();
-
-
-
-  myList = document.getElementById('markerList');
-
-
-  const row = document.createElement('div');
-  row.className = 'd-flex align-items-center p-2'; // flex layout
-  row.style.transition = 'background-color 0.2s';
-  row.style.width = '100%';
-
-  const left = document.createElement('div');
-  left.className = 'p-1 bg-dark border';
-  left.textContent = 'Suggestion '+data.suggestionid;   // e.g., item number
-
-  // Right column (wider)
-  const center = document.createElement('div');
-  center.className = 'p-1 bg-dark border';
-  center.style.flex = '1';       // takes remaining space
-  const formatted = PTU
-  .filter(v => v != null)              // remove null or undefined
-  .map(v => v.toFixed(2))              // round to 2 decimal places
-  .join(' ');                          // join them with spaces (or commas)
-
-  center.textContent = formatted;
-
-  const deleteBtn = document.createElement('button');
-  deleteBtn.className = 'btn btn-sm btn-danger';
-  deleteBtn.style.width = '3vw';
-  deleteBtn.innerHTML = '&times;'; // × symbol
-  const right = document.createElement('div');
-  right.appendChild(deleteBtn);
-
-
-  deleteBtn.addEventListener('click', (e) => {
-    e.stopPropagation(); // prevents triggering row click
-    info = row.children[0].textContent;
-    info = info.slice(-4);
-    const marker = markers.find(m => m.userData.suggestionid === info);
-    if (marker) { 
-      marker.material.dispose();
-      marker.geometry.dispose();
-      scene.remove(marker);
-    }
-
-    const mesh = meshes.find(m => m.userData === info);
-    if (mesh) { 
-      mesh.material.dispose();
-      mesh.geometry.dispose();
-      scene.remove(mesh);
-    }
-
-    var index = markers.findIndex(m => m.userData.suggestionid === info);
-    if (index !== -1) {
-      markers.splice(index, 1);
-    }
-    index = meshes.findIndex(m => m.userData=== info);
-    if (index !== -1) {
-      meshes.splice(index, 1);
-    }
-    row.remove();        // removes the row from the list
-  });
-   
-
-
-
-  // Combine columns
-  row.appendChild(left);
-  row.appendChild(center);
-  row.appendChild(right);
-
-   row.addEventListener('mouseenter', () => {
-    row.style.backgroundColor = '#f0f8ff';
-    info = row.children[0].textContent;
-    info = info.slice(-4);
-    const marker = markers.find(m => m.userData.suggestionid === info);
-    const material = marker.material;
-    material.color.set(0x0000ff);
-    
-
-  });
-  row.addEventListener('mouseleave', () => {
-    row.style.backgroundColor = '';
-    info = row.children[0].textContent;
-    info = info.slice(-4);
-    const marker = markers.find(m => m.userData.suggestionid === info);
-    const material = marker.material;
-    material.color.set(markerColor);
-  });
-
-  myList.appendChild(row);
-
-  // Save reference
-  //listItems.push({ left, right });
   e.target.reset();
 });
 
+function reindexSuggestions() {
+  const myList = document.getElementById('markerList');
 
+  suggestionData.forEach((data, idx) => {
+    const oldId = data.suggestionid;
+    const newId = zeroPad(idx, 4);
+    data.suggestionid = newId;
+
+    // Update marker
+    const marker = markers.find(m => m.userData.suggestionid === oldId);
+    if (marker) marker.userData.suggestionid = newId;
+
+    // Update meshes
+    meshes.forEach(m => {
+      if (m.userData === oldId) m.userData = newId;
+    });
+
+    // Update row text
+    const row = Array.from(myList.children).find(r =>
+      r.children[0].textContent.endsWith(oldId)
+    );
+    if (row) row.children[0].textContent = 'S.  ' + newId;
+  });
+
+  // Reset next suggestion ID
+  suggestionid = suggestionData.length;
+
+  // Re-attach hover logic for all rows
+  Array.from(myList.children).forEach(row => attachRowHoverLogic(row));
+}
+function setField(form, name, value, isCheckbox = false) {
+  const el = form.querySelector(`[name="${name}"]`);
+  if (!el) {
+    console.warn(`populatePopup: field not found → ${name}`);
+    return;
+  }
+  if (isCheckbox) {
+    el.checked = !!value;
+  } else {
+    el.value = value ?? "";
+  }
+}
+
+function attachRowHoverLogic(row) {
+  row.addEventListener('mouseenter', () => {
+    row.style.backgroundColor = '#dc1313b7';
+    const info = row.children[0].textContent.slice(-4); // current suggestionid
+    const marker = markers.find(m => m.userData.suggestionid === info);
+    if (marker) marker.material.color.set(0x0000ff);
+  });
+
+  row.addEventListener('mouseleave', () => {
+    row.style.backgroundColor = '';
+    const info = row.children[0].textContent.slice(-4); // current suggestionid
+    const marker = markers.find(m => m.userData.suggestionid === info);
+    if (marker) marker.material.color.set(markerColor); // reset to default
+  });
+}
+function populatePopup(data) {
+  const form = document.getElementById("markerForm");
+
+  setField(form, "title", data.title);
+  setField(form, "description", data.description);
+  setField(form, "intent", data.intent);
+  setField(form, "keywords", data.keywords);
+  setField(form, "notes", data.notes);
+
+  setField(form, "HRC", data.hrc, true);
+  setField(form, "enfys", data.enfys, true);
+  setField(form, "wacRGB", data.wacrgb, true);
+  setField(form, "wacmulti", data.wacmulti, true);
+  setField(form, "mosaic", data.mosaic, true);
+  // IDs
+  s_input.value = data.suggestionid;
+  u_input.value = data.userid;
+}
 
 //tracking the drawing ofa patch on the sphere
 renderer.domElement.addEventListener("click", (event) => {
@@ -279,7 +407,9 @@ renderer.domElement.addEventListener("mousemove", (event) => {
 
 
 // Tooltip on hover -  shows suggestion info
-renderer.domElement.addEventListener("mousemove", (event) => {
+const dom = renderer.domElement;
+
+dom.addEventListener("mousemove", (event) => {
   const rect = renderer.domElement.getBoundingClientRect();
     mouse.x = ((event.clientX - rect.left) / rect.width) * 2 - 1;
     mouse.y = -((event.clientY - rect.top) / rect.height) * 2 + 1;
@@ -292,12 +422,14 @@ renderer.domElement.addEventListener("mousemove", (event) => {
   if (intersects.length > 0) {
     const marker = intersects[0].object;
     const data = marker.userData;
-  
+
+
     if (data.position[2]){
           TLPan = data.position[0].toFixed(2)
           TLTilt = data.position[1].toFixed(2)
           BRPan = data.position[2].toFixed(2)
           BRTilt = data.position[3].toFixed(2)
+
     }
     else{           
           TLPan = data.position[0].toFixed(2)
@@ -309,7 +441,7 @@ renderer.domElement.addEventListener("mousemove", (event) => {
     tooltip.style.left = `${event.clientX + 10}px`;
     tooltip.style.top = `${event.clientY + 10}px`;
     tooltip.style.display = "block";
-    tooltip.width = 'width: 35vw';
+    tooltip.style.maxWidth = "35vw";
     tooltip.innerHTML = `
       <strong>Suggestion Title: ${data.title|| "Untitled"}</strong><br>
       <em>User ID: ${data.userid || "No description"}</em><br>
@@ -344,17 +476,14 @@ renderer.domElement.addEventListener("mousemove", (event) => {
     if (left + tooltipRect.width > window.innerWidth) {
       left = event.clientX - tooltipRect.width - padding;
     }
-// Flip vertically if going past the bottom edge
-if (top + tooltipRect.height > window.innerHeight) {
-  top = event.clientY - tooltipRect.height - padding;
-}
-
-tooltip.style.left = `${left}px`;
-tooltip.style.top = `${top}px`;
-tooltip.style.display = "block";
+    // Flip vertically if going past the bottom edge
+    if (top + tooltipRect.height > window.innerHeight) {
+      top = event.clientY - tooltipRect.height - padding;
+    }
    
   } else {
     tooltip.style.display = "none";
+
   }
 });
 
@@ -369,10 +498,35 @@ function showPopup(x, y) {  //gives form to fill out by user about target
 function closePopup() { //closes form when done
   const popup = document.getElementById("popupForm");
   popup.style.display = "none";
+  editingSuggestionId = null;
+
+
 }
 
+function cancelPopup() { //closes form when done
+  const popup = document.getElementById("popupForm");
+  popup.style.display = "none";
+  editingSuggestionId = null;
+    currentPatch = lastDrawnPatch;
+
+    scene.remove(currentPatch);
+  }
+
+
 document.getElementById('openDaySelector').addEventListener('click', () => {
-    const popup = window.open("", "DaySelector", "width=1000,height=800,resizable=yes");
+    const width = screen.availWidth * 0.6;   // 50% of available screen width
+    const height = screen.availHeight * 0.6; // 50% of available screen height
+
+    // Calculate coordinates to center the popup
+    const right = (screen.availWidth - width) / 2;
+    const top  = (screen.availHeight - height) / 2;
+
+
+    const popup = window.open(
+      "",
+      "DaySelector",
+      `width=${width},height=${height}, left = ${right}, top = ${top}, resizable=yes`
+    );
 
     if (!popup) {
         alert('Popup blocked! Please allow popups for this site.');
@@ -384,25 +538,21 @@ document.getElementById('openDaySelector').addEventListener('click', () => {
     doc.head.innerHTML = `
         <title>Select Day</title>
         <style>
-            body { font-family: Arial; font-size: 5px; padding: 5px; }
-            select { width: 100%; padding: 5px; height: 3vh; margin-bottom: 10px; font-size:5px;}
-            .preview-grid { display: flex; flex-wrap: wrap; gap: 5px; font-size:5px;}
-            .preview-grid img { width: 100px; height: 100px; object-fit: cover; border: 1px solid #ccc; cursor: pointer; }
-            button { padding: 5px ; margin-top: 5px; width: 100%; height: 3vh; font-size: 5px;}
+            body { font-family: Arial; font-size: 0.3rem; padding: 5px;}
+            select { width: 50vw; padding: 3px; margin-bottom: 10px; font-size:0.3rem; border-size: 1px}
+            .preview-grid { display: flex; flex-wrap: wrap; gap: 5px; font-size:0.1rem;}
+            .preview-grid img { width: 30vw; height: 30vh; object-fit: cover; border: 1px solid #ccc; cursor: pointer; }
+            button { padding: 5px ; margin-top: 5px; width: 20vw; height: 1vh; font-size: 0.2rem;}
         </style>
     `;
-
+    const solSelectLabel = document.getElementById('solSelectLabel');
     const h2 = doc.createElement('h2');
-    h2.textContent = 'Current Sol:';
+    h2.textContent = 'Current Sol: '+solSelectLabel.innerText;
     doc.body.appendChild(h2);
-
-    const h3 = doc.createElement('h3');
-    h3.textContent = 'Change Sol:';
-    doc.body.appendChild(h3);
 
     const daySelect = doc.createElement('select');
     daySelect.id = 'daySelect';
-    daySelect.innerHTML = 'asdd';
+    daySelect.innerText = 'asdd';
     doc.body.appendChild(daySelect);
 
     const previewDiv = doc.createElement('div');
@@ -416,11 +566,12 @@ document.getElementById('openDaySelector').addEventListener('click', () => {
     doc.body.appendChild(confirmBtn);
 
     const dayImages = {
+        'No Sol Selected': [''],
         'Sol 1': ['mars1.png', 'mars1_extra.png'],
         'Sol 2': ['ZCAM-0360-ZCAM08390-L-RAD-ALL-79-MOSAIC-SPHR-20250430Texture_uint8.jpg'],
         'Sol 3': ['mars1.png'],
         'Sol 4': ['pan_der_sc_l_mosaic_20221004t103007.png','pan_der_sc_l_mosaic_20221004t103123.png'],
-        'Sol Multiple': ['pan_der_sc_l_mosaic_20221004t103007.png','pan_der_sc_l_mosaic_20221004t103123.png']
+        'Sol Multiple': [    'mars1.png','ZCAM-0360-ZCAM08390-L-RAD-ALL-79-MOSAIC-SPHR-20250430Texture_uint8.jpg','mars_test.jpg']
     };
 
     Object.keys(dayImages).forEach(day => {
@@ -432,38 +583,82 @@ document.getElementById('openDaySelector').addEventListener('click', () => {
 
     // Preview update
     daySelect.addEventListener('change', () => {
-        const selectedDay = daySelect.value;
-        const images = dayImages[selectedDay] || [];
-        previewDiv.innerHTML = '';
-        images.forEach(img => {
-            const el = doc.createElement('img');
-            el.src = img;
-            el.alt = img;
-            previewDiv.appendChild(el);
-        });
-        h2.textContent = 'Current Sol: '+daySelect.value;
+    const selectedDay = daySelect.value;
+    const images = dayImages[selectedDay] || [];
+    previewDiv.innerHTML = '';
+
+    images.forEach((img, index) => {
+        const container = document.createElement('div');
+        container.style.display = 'inline-block';
+        container.style.position = 'relative';
+        container.style.margin = '5px';
+
+        // Checkbox
+        const checkbox = document.createElement('input');
+        checkbox.type = 'checkbox';
+        checkbox.checked = false;  // default: selected
+        checkbox.style.position = 'absolute';
+        checkbox.style.top = '5px';
+        checkbox.style.left = '5px';
+        checkbox.style.zIndex = '10';
+
+        // Image
+        const el = document.createElement('img');
+        el.src = img;
+        el.alt = img;
+        el.style.width = '30vw';
+        el.style.height = '30vh';
+        el.style.objectFit = 'cover';
+        el.style.border = '1px solid #ccc';
+        el.style.cursor = 'pointer';
+
+        container.appendChild(checkbox);
+        container.appendChild(el);
+        previewDiv.appendChild(container);
     });
 
-    // Confirm button
-    confirmBtn.addEventListener('click', () => {
-        const selectedDay = daySelect.value;
 
-        const solSelect = window.document.getElementById('solSelect');
-        const solSelectLabel = window.document.getElementById('solSelectLabel');
-        if (solSelect) {
-            solSelect.innerHTML = selectedDay+' Loaded';
-            solSelect.dispatchEvent(new Event('change', { bubbles: true }));
-        }
-        if (solSelectLabel) {
-            solSelectLabel.innerHTML = selectedDay+' Loaded';
-            solSelectLabel.dispatchEvent(new Event('change', { bubbles: true }));
-        }
-
-
-        popup.close();
     });
 
-    // Trigger initial preview
-    daySelect.dispatchEvent(new Event('change'));
+
+      // Function to update button state
+      function updateConfirmButton() {
+        // Check if any checkbox in the preview is checked
+        const anyChecked = Array.from(previewDiv.querySelectorAll('input[type="checkbox"]'))
+          .some(cb => cb.checked);
+        
+        confirmBtn.disabled = !anyChecked; // disable if none checked
+      }
+
+      // Listen for changes on checkboxes inside the preview
+      previewDiv.addEventListener('change', updateConfirmButton);
+
+      // Initial check when modal opens or images are loaded
+      updateConfirmButton();
+
+          confirmBtn.addEventListener('click', () => {
+              const selectedDay = daySelect.value;
+
+
+
+
+
+          // Called in modal confirm button
+          const selectedTexturesWithIndex = [];
+          const containers = previewDiv.children;
+          for (let i = 0; i < containers.length; i++) {
+              const checkbox = containers[i].querySelector('input[type="checkbox"]');
+              if (checkbox.checked) {
+                  const img = containers[i].querySelector('img');
+                  selectedTexturesWithIndex.push({ file: img.src, index: i });
+              }
+          }
+
+          // Pass to loader
+          loadSelectedTexture(selectedDay, selectedTexturesWithIndex);
+          solSelectLabel.innerText = selectedDay +  ' Selected';
+          popup.close();
+          
+          });
 });
 

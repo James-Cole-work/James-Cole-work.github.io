@@ -1,16 +1,19 @@
 
 function zoomIn() {
-  camera.zoom *= 1.5;
+  camera.fov = Math.max(camera.fov * 0.95, 20);
+
+  
   camera.updateProjectionMatrix();
 }
 
+
 function zoomOut() {
-  camera.zoom /= 1.5;
+  camera.fov = Math.min(camera.fov * 1.05, 60);
   camera.updateProjectionMatrix();
 }
 
 function resetView() {
-  camera.zoom = 1;
+  camera.fov = 60;
   camera.position.set(-0.1, 0, 0
     );
 

@@ -48,7 +48,7 @@ const textureLoader = new THREE.TextureLoader();
 
   const geometry = new THREE.SphereGeometry(gen_radius, widthSegments, heightSegments, phiStart, phiLength, thetaStart, thetaLength)
   const material = new THREE.MeshBasicMaterial({
-    color: 0x00ffff,       wireframe: true,         });
+    color: 0xD3D3D3,       wireframe: true,         });
 
   sphere = new THREE.Mesh(geometry, material);
   sphere.name = "mySphere";
@@ -76,117 +76,121 @@ document.getElementById('solSelect').addEventListener('change', (e) => {
   console.log('Sol Initialised:', result);
 });
 
-async function loadSelectedTexture(solName) {
-  clearMarkers();
+async function loadSelectedTexture(solName, selectedTexturesWithIndex = null) {
+    clearMarkers();
 
-  if (sphereGroup) {
-    scene.remove(sphereGroup);
-    sphereGroup.children.forEach(child => {
-      if (child.material.map) child.material.map.dispose();
-      child.material.dispose();
-      child.geometry.dispose();
-    });
-    sphereGroup = null;
-  }
+    if (sphereGroup) {
+        scene.remove(sphereGroup);
+        sphereGroup.children.forEach(child => {
+            if (child.material.map) child.material.map.dispose();
+            child.material.dispose();
+            child.geometry.dispose();
+        });
+        sphereGroup = null;
+    }
 
-  if (sphere) sphere.visible = false;
+    if (sphere) sphere.visible = false;
 
-  const textures = textureFilesMap[solName] || [];
-  const coords = coordsFilesMap[solName] || [];
+    const texturesArray = selectedTexturesWithIndex || textureFilesMap[solName]?.map((file, i) => ({ file, index: i })) || [];
+    const coords = coordsFilesMap[solName] || [];
 
-  // --- MULTI-TEXTURE CASE ---
-  if (textures.length > 1) {
-    sphere.visible = false;
-    sphereGroup = new THREE.Group();
-    scene.add(sphereGroup);
+    if (texturesArray.length === 0) {
+        console.warn(`No textures found for ${solName}`);
+        sphere.visible = false;
+        return;
+    }
 
-    const results = await Promise.all(
-      textures.map((file, i) =>
-        new Promise(resolve => {
-          textureLoader.load(file, tex => {
-            loadJsonData(coords[i]).then(data => resolve({ tex, data }));
-          });
-        })
-      )
-    );
+    // MULTI-TEXTURE CASE
+    if (texturesArray.length > 1) {
+        sphere.visible = false;
+        sphereGroup = new THREE.Group();
+        scene.add(sphereGroup);
 
-    results.forEach(({ tex, data }, i) => {
-      if (!data) return;
+        const results = await Promise.all(
+            texturesArray.map(({ file, index }) =>
+                new Promise(resolve => {
+                    textureLoader.load(file, tex => {
+                        loadJsonData(coords[index]).then(data => resolve({ tex, data }));
+                    });
+                })
+            )
+        );
 
-      const widthSegments = 32;
-      const heightSegments = 64;
-      const phiStart = data.mapTransform[0] * transConst;
-      const phiLength = data.mapTransform[1] * data.mapWidth * transConst;
-      const thetaStart = Math.PI - data.mapTransform[3] * transConst;
-      const thetaLength = data.mapTransform[5] * data.mapHeight * transConst;
+        results.forEach(({ tex, data }, i) => {
+            if (!data) return;
 
-      const radiusOffset = Math.random() * 50 * i;
-      const radius = gen_radius - radiusOffset;
+            const widthSegments = 32;
+            const heightSegments = 64;
+            const phiStart = data.mapTransform[0] * transConst;
+            const phiLength = data.mapTransform[1] * data.mapWidth * transConst;
+            const thetaStart = Math.PI - data.mapTransform[3] * transConst;
+            const thetaLength = data.mapTransform[5] * data.mapHeight * transConst;
 
-      tex.wrapS = THREE.RepeatWrapping;
-      tex.repeat.x = -1;
+            const radius = gen_radius - Math.random() * 15 * i; // keep consistent radius
 
-      const mat = new THREE.MeshBasicMaterial({
-        map: tex,
-        side: THREE.BackSide
-      });
+            tex.wrapS = THREE.RepeatWrapping;
+            tex.repeat.x = -1;
 
-      const geo = new THREE.SphereGeometry(
-        radius,
-        widthSegments,
-        heightSegments,
-        phiStart,
-        phiLength,
-        thetaStart,
-        thetaLength
-      );
+            const mat = new THREE.MeshBasicMaterial({
+                map: tex,
+                side: THREE.BackSide
+            });
 
-      const mesh = new THREE.Mesh(geo, mat);
-      sphereGroup.add(mesh);
-    });
+            const geo = new THREE.SphereGeometry(
+                radius,
+                widthSegments,
+                heightSegments,
+                phiStart,
+                phiLength,
+                thetaStart,
+                thetaLength
+            );
 
-    console.log(`Multi-texture load complete for ${solName}`);
+            const mesh = new THREE.Mesh(geo, mat);
+            sphereGroup.add(mesh);
+        });
 
-  // --- SINGLE TEXTURE CASE ---
-  } else if (textures.length === 1) {
-    console.log(`Loading single texture for ${solName}: ${textures[0]}`);
-    sphere.visible = true;
+        console.log(`Multi-texture load complete for ${solName}`);
 
-    const tex = await new Promise(resolve => textureLoader.load(textures[0], resolve));
-    const data = await loadJsonData(coords[0]);
-    if (!data) return;
+    // SINGLE TEXTURE CASE
+    } else {
+        console.log(`Loading single texture for ${solName}: ${texturesArray[0].file}`);
+        sphere.visible = true;
 
-    const widthSegments = 32;
-    const heightSegments = 64;
-    const phiStart = data.mapTransform[0] * transConst;
-    const phiLength = data.mapTransform[1] * data.mapWidth * transConst;
-    const thetaStart = Math.PI - data.mapTransform[3] * transConst;
-    const thetaLength = data.mapTransform[5] * data.mapHeight * transConst;
+        const { file, index } = texturesArray[0];
 
-    if (sphere.material) sphere.material.dispose();
-    sphere.geometry.dispose();
+        const tex = await new Promise(resolve => textureLoader.load(file, resolve));
+        const data = await loadJsonData(coords[index]);
+        if (!data) return;
 
-    sphere.geometry = new THREE.SphereGeometry(
-      gen_radius,
-      widthSegments,
-      heightSegments,
-      phiStart,
-      phiLength,
-      thetaStart,
-      thetaLength
-    );
+        const widthSegments = 32;
+        const heightSegments = 64;
+        const phiStart = data.mapTransform[0] * transConst;
+        const phiLength = data.mapTransform[1] * data.mapWidth * transConst;
+        const thetaStart = Math.PI - data.mapTransform[3] * transConst;
+        const thetaLength = data.mapTransform[5] * data.mapHeight * transConst;
 
-    tex.wrapS = THREE.RepeatWrapping;
-    tex.repeat.x = -1;
+        if (sphere.material) sphere.material.dispose();
+        sphere.geometry.dispose();
 
-    sphere.material = new THREE.MeshBasicMaterial({
-      map: tex,
-      side: THREE.BackSide
-    });
+        sphere.geometry = new THREE.SphereGeometry(
+            gen_radius,
+            widthSegments,
+            heightSegments,
+            phiStart,
+            phiLength,
+            thetaStart,
+            thetaLength
+        );
 
-    console.log(`Single-texture load complete for ${solName}`);
-  } else {
-    console.warn(`No textures found for ${solName}`);
-    sphere.visible = false;
-  }
+        tex.wrapS = THREE.RepeatWrapping;
+        tex.repeat.x = -1;
+
+        sphere.material = new THREE.MeshBasicMaterial({
+            map: tex,
+            side: THREE.BackSide
+        });
+
+        console.log(`Single-texture load complete for ${solName}`);
+    }
 }

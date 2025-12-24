@@ -3,7 +3,7 @@
 function placeMarker(position, data) {
 
   if (clicks.length < 2){
-    const starShape = createStarShape(6, 15, 5);
+    const starShape = createStarShape(3, 8, 8);
     const geometry = new THREE.ShapeGeometry(starShape);
     const material = new THREE.MeshBasicMaterial({ color: markerColor, side: THREE.DoubleSide });
     const marker = new THREE.Mesh(geometry, material);
@@ -50,7 +50,7 @@ function localMarker(position, data) {
   if (data && data.mouse) {
       if (data.mouse.length<2){
       console.log('marker');
-      const starShape = createStarShape(6, 15, 5);
+      const starShape = createStarShape(3, 8, 8);
       const geometry = new THREE.ShapeGeometry(starShape);
       const material = new THREE.MeshBasicMaterial({ color: markerColor, side: THREE.DoubleSide });
       const marker = new THREE.Mesh(geometry, material);

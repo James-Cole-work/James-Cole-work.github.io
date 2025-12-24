@@ -160,7 +160,7 @@ hud.appendChild(panLabelContainer);
 for (let angle = -180; angle <= 180; angle += 45) {
   const label = document.createElement('div');
   label.style.position = 'absolute';
-  label.style.fontSize = '0.3em';
+  label.style.fontSize = '0.4em';
   label.style.color = '#000';
   label.style.fontFamily = 'monospace';
   label.style.top = '0';
@@ -186,7 +186,7 @@ for (let angle = -90; angle <= 90; angle += 30) {
   const label = document.createElement('div');
   label.style.position = 'absolute';
   label.style.left = '0.1vh';
-  label.style.fontSize = '0.3em';
+  label.style.fontSize = '0.4em';
   label.style.color = '#000';
   label.style.fontFamily = 'monospace';
   label.textContent = `${angle}°`;
@@ -436,3 +436,4 @@ const panCamLogo = document.createElement('img');
 panCamLogo.id = 'PanCamLogo';
 panCamLogo.src = 'PanCamLogo.png'
 hud.appendChild(panCamLogo);
+

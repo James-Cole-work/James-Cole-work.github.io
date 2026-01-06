@@ -161,8 +161,8 @@ for (let angle = -180; angle <= 180; angle += 45) {
   const label = document.createElement('div');
   label.style.position = 'absolute';
     const containerHeight = panLabelContainer.clientHeight;
-    label.style.fontSize = `${containerHeight * 0.05}vw`; // 80% of container height
-    label.style.lineHeight = `${containerHeight * 0.05}vw`;
+    label.style.fontSize = `${containerHeight * 0.03}vw`; // 80% of container height
+    label.style.lineHeight = `${containerHeight * 0.03}vw`;
   label.style.color = '#000';
   label.style.fontFamily = 'monospace';
   label.style.top = '0';
@@ -189,8 +189,8 @@ for (let angle = -90; angle <= 90; angle += 30) {
   label.style.position = 'absolute';
   label.style.left = '0.1vh';
     const containerWidth = tiltLabelContainer.clientWidth;
-    label.style.fontSize = `${containerWidth*0.05}vw`; // 80% of container height
-    label.style.lineHeight = `${containerWidth*0.05}vw`;
+    label.style.fontSize = `${containerWidth*0.03}vw`; // 80% of container height
+    label.style.lineHeight = `${containerWidth*0.03}vw`;
   label.style.color = '#000';
   label.style.fontFamily = 'monospace';
   label.textContent = `${angle}°`;

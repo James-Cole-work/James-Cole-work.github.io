@@ -517,8 +517,8 @@ function cancelPopup() { //closes form when done
 
 
 document.getElementById('openDaySelector').addEventListener('click', () => {
-    const width = screen.availWidth * 0.4;   // 50% of available screen width
-    const height = screen.availHeight * 0.4; // 50% of available screen height
+    const width = screen.availWidth * 0.1;   // 50% of available screen width
+    const height = screen.availHeight * 0.1; // 50% of available screen height
 
     // Calculate coordinates to center the popup
     const right = (screen.availWidth - width) / 2;
@@ -664,5 +664,6 @@ document.getElementById('openDaySelector').addEventListener('click', () => {
           
           });
 });
+
 
 

@@ -17,12 +17,12 @@
         <div id="threejs-canvas"></div>
         
           <div id = 'ui-container'>
-           <p id="solSelectLabel" style="font-size:3vh; position:absolute; bottom:0.1rem; left:42.5vw; width:15vw; color: white; background-color:#00000085; font-size: 0.5rem; text-align: center;">No Sol Selected</p>
-           <button id="openDaySelector" class = "btn btn-secondary"style="font-size:0.7rem; left: calc(50vw - 1rem); position:absolute; bottom: 2rem; width: 2rem; height: 2rem; z-index: 100000; color: black; background-color:#e3e3e3; "><i class="bi bi-calendar3"></i></button>
+           <p id="solSelectLabel" style="position:absolute; bottom:0.8vw; left:42.5vw; width:15vw; color: white; background-color:#00000085; font-size: 1vw; text-align: center;">No Sol Selected</p>
+           <button id="openDaySelector" class = "btn btn-secondary"style=" left: calc(50vw - 1.5vw); position:absolute; bottom: 3.2vw; width: 3vw; height: 3vw; z-index: 100000; color: black; background-color:#e3e3e3; "><i class="bi bi-calendar3"></i></button>
 
-            <button id="zoomIn" onclick="zoomIn()"class = "btn btn-secondary" style="left: 96vw; position:absolute; bottom:91vh; width:1vw;height: 4vh;font-size:0.5rem; color: black;background-color:#e3e3e3c8;">+</button>
-          <button id="zoomOut" onclick="zoomOut()" class = "btn btn-secondary"style="left: 96vw; position:absolute; bottom:87vh;width: 1vw ;height: 4vh; font-size:0.5rem; color: black;background-color:#e3e3e3c8;">-</button>
-            <button id="resetZoom" onclick="resetView()" class = "btn btn-secondary"style="left: 96vw; position:absolute; bottom:82.5vh; width: 1vw ;height: 4vh; font-size:0.5rem; color: black; background-color:#e3e3e3c8; border-color: black;" ><i class="bi bi-arrow-clockwise"></i></button>
+            <button id="zoomIn" onclick="zoomIn()"class = "btn btn-secondary" style="left: 96vw; position:absolute; bottom:91vh; width:1vw;height: 4vh;font-size:0.75vw; color: black;background-color:#e3e3e3c8;">+</button>
+          <button id="zoomOut" onclick="zoomOut()" class = "btn btn-secondary"style="left: 96vw; position:absolute; bottom:87vh;width: 1vw ;height: 4vh; font-size:0.75vw; color: black;background-color:#e3e3e3c8;">-</button>
+            <button id="resetZoom" onclick="resetView()" class = "btn btn-secondary"style="left: 96vw; position:absolute; bottom:82.5vh; width: 1vw ;height: 4vh; font-size:0.75vw; color: black; background-color:#e3e3e3c8; border-color: black;" ><i class="bi bi-arrow-clockwise"></i></button>
            
     
 <!-- Sidebar Toggle Buttons -->
@@ -185,8 +185,8 @@
     <form id="markerForm">
       <div class="input-row">
         <label>Title: <input type="text" name="title" /></label>
-        <label>Suggestion ID: <input type="text" name="suggestionID" disabled /></label>
-        <label>User ID: <input type="text" name="userID" disabled /></label>
+        <label>Suggestion ID: <input type="text" name="suggestionID" readonly /></label>
+        <label>User ID: <input type="text" name="userID" readonly /></label>
       </div>
 
       <div class="input-row">
@@ -208,13 +208,13 @@
               <div class="multi-select">
         <button type="button" id="keywordDropdownBtn">Select Keywords ▼</button>
         <div id="keywordDropdown" class="dropdown-content">
-          <label><input type="checkbox" value="Keyword 1"> Keyword 1</label>
-          <label><input type="checkbox" value="Keyword 2"> Keyword 2</label>
-          <label><input type="checkbox" value="Keyword 3"> Keyword 3</label>
+          <label><input type="checkbox" name="keywords" value="Keyword 1"> Keyword 1</label>
+          <label><input type="checkbox" name="keywords" value="Keyword 2"> Keyword 2</label>
+          <label><input type="checkbox" name="keywords" value="Keyword 3"> Keyword 3</label>
         </div>
       </div>
         </div>
-        <label><input type="text" id="selectedKeywords" name="selectedKeywords" style = 'width: 50%s;'disabled /></label>
+        <label><input type="text" id="selectedKeywords" name="selectedKeywords" style = 'width: 100%'readonly/></label>
 
       <label>Other Notes:<textarea name="notes"></textarea></label>
 
@@ -229,7 +229,7 @@
 
 
             
-<div id="tooltip" style="display:none; position: fixed; pointer-events:none; background:white; border:1px solid black; padding:5px; z-index:2000; overflow-wrap: break-word; max-width:30vw; font-size: 0.5rem;"></div>
+<div id="tooltip" style="display:none; position: fixed; pointer-events:none; background:white; border:1px solid black; padding:5px; z-index:2000; overflow-wrap: break-word; max-width:30vw; font-size: 1vw;"></div>
 
 
 
@@ -283,7 +283,9 @@ renderer.domElement.focus();
 //const markerColor = '#' + Math.floor(Math.random() * 16777215).toString(16).padStart(6, '0');
 const markerColor = '#'+'40be9b'
 
+// Listen for resize events
 
+window.addEventListener('resize', onWindowResize, false);
 const threejsContainer = document.getElementById('threejs-container');
 threejsContainer.insertBefore(hud, threejsContainer.firstChild);
 //const markerColor  = 0xffff00

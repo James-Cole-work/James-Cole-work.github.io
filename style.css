@@ -1,4 +1,8 @@
-
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
 html, body {
     margin: 0;
     padding: 0;
@@ -214,9 +218,9 @@ button.btn-secondary {
 #openBtn1 {
   position: fixed;  /* so top/right work */
   bottom: 0;
-  right: 3rem;
-  width: 1.5rem;       /* adjust as needed */
-  height: 1.5rem;      /* scales with window height */
+  right: 6vw;
+  width: 3vw;       /* adjust as needed */
+  height: 3vw;      /* scales with window height */
   padding: 0;        /* no internal spacing */
   margin: 0;         /* no external spacing */
   border-radius: 1px;  /* optional */
@@ -230,9 +234,9 @@ button.btn-secondary {
 #openBtn2 {
   position: fixed;  /* so top/right work */
   bottom: 0;
-  right: 1.5rem;
-  width: 1.5rem;       /* adjust as needed */
-  height: 1.5rem;      /* scales with window height */
+  right: 3vw;
+  width: 3vw;       /* adjust as needed */
+  height: 3vw;      /* scales with window height */
   padding: 0;        /* no internal spacing */
   margin: 0;         /* no external spacing */
   border-radius: 1px;  /* optional */
@@ -248,8 +252,8 @@ button.btn-secondary {
   position: fixed;  /* so top/right work */
   bottom: 0;
   right: 0;
-  width: 1.5rem;       /* adjust as needed */
-  height: 1.5rem;      /* scales with window height */
+  width: 3vw;       /* adjust as needed */
+  height: 3vw;      /* scales with window height */
   padding: 0;        /* no internal spacing */
   margin: 0;         /* no external spacing */
   border-radius: 1px;  /* optional */
@@ -261,11 +265,11 @@ button.btn-secondary {
 
 }
 .icon-btn {
-  font-size: 2vh;   /* controls button + icon size */
+  font-size: 3.5vh;   /* controls button + icon size */
 }
 
 .icon-btn i {
-  font-size: 0.7em;   /* icon matches button text size */
+  font-size: 3.5vh;   /* icon matches button text size */
   line-height: 1;
 }
 
@@ -392,7 +396,7 @@ button.btn-secondary {
   height: 75vh;
   display: flex;
   flex-direction: column;
-  font-size: 0.5rem;      /* base font size */
+  font-size: 1vw;      /* base font size */
   background-color: #fff;
   border: 1px solid #ccc;
   box-shadow: 0 4px 12px rgba(0,0,0,0.2);
@@ -517,8 +521,6 @@ button.btn-secondary {
   cursor: pointer;
 }
 
-
-/* Show the dropdown menu (use JS to add this class to the .dropdown-content container when the user clicks on the dropdown button) */
 .show {display:block;}
 
 #PanCamLogo {

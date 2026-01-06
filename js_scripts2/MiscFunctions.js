@@ -37,8 +37,7 @@ function onWindowResize() {
   
 }
 
-// Listen for resize events
-window.addEventListener('resize', onWindowResize, false);
+
 
 // Function to create a 5-pointed star shape
 function createStarShape(innerRadius , outerRadius , points ) {

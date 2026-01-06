@@ -55,6 +55,9 @@ document.getElementById("markerForm").addEventListener("submit", (e) => {
   const formData = new FormData(e.target);
   const data = Object.fromEntries(formData.entries());
 
+  const keywords = formData.getAll("keywords");
+  data.keywords = keywords;
+
   data.userid = userid;
 
   // Determine if we are in edit mode
@@ -72,7 +75,6 @@ document.getElementById("markerForm").addEventListener("submit", (e) => {
   data.wacrgb = formData.has("wacRGB");
   data.wacmulti = formData.has("wacmulti");
   data.mosaic = formData.has("mosaic");
-  console.log(clicks)
   // Use correct click data
   const clickData = isEdit
     ? suggestionData.find(d => d.suggestionid === editingSuggestionId)?.mouse
@@ -310,7 +312,7 @@ function populatePopup(data) {
   setField(form, "title", data.title);
   setField(form, "description", data.description);
   setField(form, "intent", data.intent);
-  setField(form, "keywords", data.keywords);
+  setField(form, "keywords", data.selectedKeywords);
   setField(form, "notes", data.notes);
 
   setField(form, "HRC", data.hrc, true);
@@ -321,6 +323,22 @@ function populatePopup(data) {
   // IDs
   s_input.value = data.suggestionid;
   u_input.value = data.userid;
+
+    // Clear all keyword checkboxes
+  document.querySelectorAll('input[name="keywords"]').forEach(cb => {
+    cb.checked = false;
+  });
+
+  // Restore checked keywords
+  if (Array.isArray(data.keywords)) {
+    document.querySelectorAll('input[name="keywords"]').forEach(cb => {
+      cb.checked = data.keywords.includes(cb.value);
+    });
+
+    // Update display field
+    document.getElementById("selectedKeywords").value =
+      data.keywords.join(", ");
+  }
 }
 
 //tracking the drawing ofa patch on the sphere
@@ -437,7 +455,7 @@ if (intersects.length > 0) {
       <label>WAC RGB: <input type="checkbox" disabled ${data.wacrgb ? "checked" : ""} /></label>
       <label>WAC Multi: <input type="checkbox" disabled ${data.wacmulti ? "checked" : ""} /></label><br>
       <label>Mosaic: <input type="checkbox" disabled ${data.mosaic ? "checked" : ""} /></label><br>
-      <em>Keywords: ${data.keywords || "No description"}</em><br>
+      <em>Keywords: ${data.selectedKeywords || "No description"}</em><br>
       <em>Other Notes: ${data.notes || "No description"}</em><br>
     `;
 
@@ -523,11 +541,11 @@ document.getElementById('openDaySelector').addEventListener('click', () => {
     doc.head.innerHTML = `
         <title>Select Day</title>
         <style>
-            body { font-family: Arial; font-size: 0.3rem; padding: 5px;}
-            select { width: 50vw; padding: 3px; margin-bottom: 10px; font-size:0.3rem; border-size: 1px}
-            .preview-grid { display: flex; flex-wrap: wrap; gap: 5px; font-size:0.1rem;}
+            body { font-family: Arial; font-size: 2vw; padding: 5px;}
+            select { width: 50vw; padding: 3px; margin-bottom: 10px; font-size:2vw; border-size: 1px}
+            .preview-grid { display: flex; flex-wrap: wrap; gap: 5px; font-size:1vw;}
             .preview-grid img { width: 30vw; height: 30vh; object-fit: cover; border: 1px solid #ccc; cursor: pointer; }
-            button { padding: 5px ; margin-top: 5px; width: 20vw; height: 1vh; font-size: 0.2rem;}
+            button {  width: 20vw;  height: 3vw;  padding: 0;  display: flex;align-items: center; justify-content: center; font-size: 2vw;}
         </style>
     `;
     const solSelectLabel = document.getElementById('solSelectLabel');

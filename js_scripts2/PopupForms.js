@@ -541,11 +541,11 @@ document.getElementById('openDaySelector').addEventListener('click', () => {
     doc.head.innerHTML = `
         <title>Select Day</title>
         <style>
-            body { font-family: Arial; font-size: 2vw; padding: 5px;}
-            select { width: 50vw; padding: 3px; margin-bottom: 10px; font-size:2vw; border-size: 1px}
+            body { font-family: Arial; font-size: 1.5vw; padding: 5px;}
+            select { width: 50vw; padding: 3px; margin-bottom: 10px; font-size:1.5vw; border-size: 1px}
             .preview-grid { display: flex; flex-wrap: wrap; gap: 5px; font-size:1vw;}
             .preview-grid img { width: 30vw; height: 30vh; object-fit: cover; border: 1px solid #ccc; cursor: pointer; }
-            button {  width: 20vw;  height: 3vw;  padding: 0;  display: flex;align-items: center; justify-content: center; font-size: 2vw;}
+            button {  width: 20vw;  height: 3vw;  padding: 0;  display: flex;align-items: center; justify-content: center; font-size: 1.5vw;}
         </style>
     `;
     const solSelectLabel = document.getElementById('solSelectLabel');

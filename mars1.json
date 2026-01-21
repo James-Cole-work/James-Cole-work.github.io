@@ -2,7 +2,7 @@
     "schema_id": "https://www.joanneum.at/jim/camera_image.schema.json",
     "schema_version": 7412,
     "product_type": "mosaic",
-    "image_width": 54896,
+    "image_width": 67796,
     "image_height": 10000,
     "channels": 3,
     "data_type": "float",

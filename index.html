@@ -1,413 +1,407 @@
-<!DOCTYPE html>
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" 
-          content="width=device-width, 
-                   initial-scale=1.0">
-    <title>PASTI - PAncam Suggested Target Interface</title>
-    <link rel="stylesheet" href="style.css">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
-</head>
-<body>
-  <div id = "container">
-    
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>PASTI – Bootstrap Version</title>
+
+    <!-- Bootstrap CSS -->
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css"
+      rel="stylesheet"
+    />
+
+    <link rel="stylesheet" href="style.css" />
+
+    <style></style>
+  </head>
+
+  <body>
+    <!-- ================= THREE.JS CANVAS ================= -->
     <div id="threejs-container">
-      
-        <div id="threejs-canvas"></div>
-        
-          <div id = 'ui-container'>
-           <p id="solSelectLabel" style="position:absolute; bottom:0.8vw; left:42.5vw; width:15vw; color: white; background-color:#00000085; font-size: 1vw; text-align: center;">No Sol Selected</p>
-           <button id="openDaySelector" class = "btn btn-secondary"style=" left: calc(50vw - 1.5vw); position:absolute; bottom: 3.2vw; width: 3vw; height: 3vw; z-index: 100000; color: black; background-color:#e3e3e3; "><i class="bi bi-calendar3"></i></button>
-
-            <button id="zoomIn" onclick="zoomIn()"class = "btn btn-secondary" style="left: 96vw; position:absolute; bottom:91vh; width:1vw;height: 4vh;font-size:0.75vw; color: black;background-color:#e3e3e3c8;">+</button>
-          <button id="zoomOut" onclick="zoomOut()" class = "btn btn-secondary"style="left: 96vw; position:absolute; bottom:87vh;width: 1vw ;height: 4vh; font-size:0.75vw; color: black;background-color:#e3e3e3c8;">-</button>
-            <button id="resetZoom" onclick="resetView()" class = "btn btn-secondary"style="left: 96vw; position:absolute; bottom:82.5vh; width: 1vw ;height: 4vh; font-size:0.75vw; color: black; background-color:#e3e3e3c8; border-color: black;" ><i class="bi bi-arrow-clockwise"></i></button>
-           
-    
-<!-- Sidebar Toggle Buttons -->
-<div class="position-fixed top-0 end-0 d-flex gap-1 m-0">
-  <button id="openBtn1"
-          class="btn btn-secondary icon-btn"
-          onclick="toggleSidebar(1)">
-     <i class="bi bi-gear"></i>
-  </button>
-
-  <button id="openBtn2"
-          class="btn btn-secondary icon-btn"
-          onclick="toggleSidebar(2)">
-   <i class="bi bi-crosshair" ></i>
-  </button>
-
-    <button id="openBtn3"
-          class="btn btn-secondary icon-btn" onclick="toggleSidebar(3)">
-   
-   <i class="bi bi-question-circle-fill"></i>
-  </button>
-</div>
-      <div id="buttontooltip" 
-     style="position:absolute; display:none; background:#333; color:#fff; padding:5px 10px; border-radius:4px; font-size:1vh; pointer-events:none; z-index:10000;"></div>
+      <div id="threejs-canvas" class = 'canvas'></div>
     </div>
+    <div class="ui-container" id="ui-container">
+      <!-- ================= COORD BARS ================= -->
 
-<!-- Sidebar 1 control panel -->
-<div id="mySidebar1"
-     class="position-fixed top-0 end-0 d-flex flex-column"
-     style="width:15vw; height:40vh; transform: translateY(100vh); background:#232323e2; color:#fff;">
-
-  <!-- Header -->
-    <div class="d-flex align-items-center border-bottom px-2"
-        style="flex: 0 1 auto; font-size:1.8vh;">
-      <button id="closeSidebarBtn1"
-              class="btn btn-sm btn-outline-light d-flex align-items-center justify-content-center"
-              style="width:3vw; height:3vh; font-size:2vh;"
-              onclick="closeSidebar(1)">&times;</button>
-      <h5 class="mb-0 ms-2 fw-bold" style="font-size:2vh;">Control Panel</h5>
-    </div>
-
-  <!-- Main content area -->
-<div class="sidebar-content d-flex flex-column gap-2 p-2"
-     style="flex: 1 1 auto; min-height:0;">
-
-
-
-    <!-- Target Controls -->
-    <div class="d-flex gap-0">
-      <button id="targetClear" onclick="clearMarkers()" class="btn btn-outline-danger flex-fill d-flex align-items-center justify-content-center text-nowrap" style="font-size:1.5vh;">Clear Suggestions</button>
-      <button id="targetSend" onclick="" class="btn btn-outline-primary flex-fill d-flex align-items-center justify-content-center text-nowrap" style="font-size:1.5vh;">Send & Confirm</button>
-    </div>
-
-    <!-- File Controls -->
-    <div class="d-flex flex-column gap-1">
-      <button onclick="jsonDownload()" id="download" class="btn btn-info w-100 d-flex align-items-center justify-content-center" style="font-size:1.4vh;">Download Local Suggestions</button>
-      <input type="file" id="jsonFile" accept=".json" class="form-control form-control-sm" style="font-size:1vh;">
-      <button id="upload" onclick="jsonUpload()" class="btn btn-secondary w-100 d-flex align-items-center justify-content-center" style="font-size:1.4vh;">Show Local Suggestions</button>
-    </div>
-
-    <!-- Checkboxes -->
-<div class="d-flex gap-1">
-  <label class="form-check">
-    <input class="form-check-input" type="checkbox" id="scales" onclick="coordGrid()">
-    Coordinate Gridlines
-  </label>
-  <label class="form-check">
-    <input class="form-check-input" type="checkbox" id="markerShow" onclick="markerShow()" checked>
-    Show Suggestions
-  </label>
-</div>
-</div>
-  <!-- Footer / Instructions -->
-  <div class="border-top p-1" style="border-color: #444; font-size:1.4vh; line-height:1.3; color:#ddd;">
-    <strong>Controls:</strong><br>
-    Double Left Click – Place Marker<br>
-    Shift + Left Click – Draw Patch<br>
-    Right Click – Pan<br>
-    W: WAC FoV | H: HRC FoV | E: Enfys FoV
-  </div>
-
-
-
-
-</div>
-<!-- Sidebar 2 current targets-->
-
-<div id="mySidebar2"
-     class="border-start shadow position-fixed top-0 end-0"
-     style="
-       width:15vw;
-       transform:translateY(100vh);
-       transition: transform 0.3s ease;
-       z-index:10001;
-       background:#232323e2;
-       color:#fff;
-     ">
-
-  <!-- Header -->
-  <div class="d-flex align-items-center border-bottom px-2"
-       style="height:6vh; font-size:2.5vh;">
-    <button id="closeSidebarBtn2"
-            class="btn btn-sm btn-outline-light d-flex align-items-center justify-content-center"
-            style="width:3vw; height:3vh; font-size:2vh;"
-            onclick="closeSidebar(2)">&times;</button>
-    <h5 class="mb-0 ms-2 fw-bold" style="font-size:2vh;">
-      Current Suggestions
-    </h5>
-  </div>
-
-  <!-- Scrollable list -->
-  <div id="markerList"
-       class="list-group list-group-flush"
-       style="
-         height: calc(100vh - 6vh);
-         overflow-y: auto;
-       ">
-    <!-- Items go here -->
-  </div>
-
-</div>
-
-<div id="mySidebar3"
-     class="border-start shadow position-fixed top-0 end-0"
-     style="
-       width:15vw;
-       transform:translateY(100vh);
-       transition: transform 0.3s ease;
-       z-index:10001;
-       background:#232323e2;
-       color:#fff;
-     ">
-
-  <!-- Header -->
-  <div class="d-flex align-items-center border-bottom px-2"
-       style="height:6vh; font-size:2.5vh;">
-    <button id="closeSidebarBtn3"
-            class="btn btn-sm btn-outline-light d-flex align-items-center justify-content-center"
-            style="width:3vw; height:3vh; font-size:2vh;"
-            onclick="closeSidebar(3)">&times;</button>
-    <h5 class="mb-0 ms-2 fw-bold" style="font-size:2vh;">
-     WELCOME TO PASTI
-    </h5>
-  </div>
-  Pasti is a.....
-    <img src="PanCamLogo.png" alt="Mars surface" style="width:5vw; object-fit:cover;">
-</div>
-
-    </div>
-
-  </div>
-
-</div>
-
-
-
-<div id="popupForm" class="popup" style="display:none;">
-  <div id="popupHeader">Suggestion Form</div>
-  <div class="popup-body">
-    <form id="markerForm">
-      <div class="input-row">
-        <label>Title: <input type="text" name="title" /></label>
-        <label>Suggestion ID: <input type="text" name="suggestionID" readonly /></label>
-        <label>User ID: <input type="text" name="userID" readonly /></label>
+      <div
+        id="panBar"
+        class="position-fixed top-0 start-0 w-100 p-0 d-flex align-items-center gap-0 bg-white"
+      ></div>
+      <div
+        id="tiltBar"
+        class="position-fixed top-0 start-0 vh-100 p-0 d-flex flex-column gap-0 bg-white"
+      ></div>
+      <!-- ================= ZOOM CONTROLS ================= -->
+      <div
+        class="position-fixed top-0 end-0 p-3 d-flex flex-column gap-2"
+        id="zoomControls"
+      >
+        <button class="btn btn-light" onclick="zoomIn()">+</button>
+        <button class="btn btn-light" onclick="zoomOut()">−</button>
+        <button class="btn btn-light" onclick="resetView()">
+          <i class="bi bi-arrow-clockwise"></i>
+        </button>
       </div>
 
-      <div class="input-row">
-        <label>Description:<textarea name="description"></textarea></label>
-        <label>Science Intent:<textarea name="intent"></textarea></label>
-      </div>
-      
-      <div class="checkboxes">
-        <label><input type="checkbox" name="HRC" /> HRC</label>
-        <label><input type="checkbox" name="enfys" /> Enfys</label>
-        <label><input type="checkbox" name="wacRGB" /> WAC RGB</label>
-        <label><input type="checkbox" name="wacmulti" /> WAC Multispectral</label>
-        <label><input type="checkbox" name="mosaic" /> Mosaic</label>
+      <!-- ================= SOL SELECTOR ================= -->
+      <div
+        class="position-fixed bottom-0 start-50 translate-middle-x mb-0 text-center"
+        id="solSelectBox"
+      >
+        <p id="solSelectLabel">No Sol Selected</p>
+        <button
+          class="btn btn-light"
+          data-bs-toggle="modal"
+          data-bs-target="#daySelectorModal"
+          title="Select Sol"
+        >
+          <i class="bi bi-calendar3"></i>
+        </button>
+        <p id="PanTiltLabel">Pan: --, Tilt: --</p>
       </div>
 
-      <div class = 'input-row'>
-        <label>Keywords:</label>
+      <!-- ================= SIDEBAR BUTTON BAR ================= -->
+      <div
+        class="position-fixed bottom-0 end-0 p-2 bg-danger rounded-top-start d-flex gap-2"
+        id="sidebarContainer"
+      >
+        <button
+          class="btn btn-light"
+          data-bs-toggle="offcanvas"
+          data-bs-target="#controlPanel"
+          title="Control Panel"
+        >
+          <i class="bi bi-gear"></i>
+        </button>
 
-              <div class="multi-select">
-        <button type="button" id="keywordDropdownBtn">Select Keywords ▼</button>
-        <div id="keywordDropdown" class="dropdown-content">
-          <label><input type="checkbox" name="keywords" value="Keyword 1"> Keyword 1</label>
-          <label><input type="checkbox" name="keywords" value="Keyword 2"> Keyword 2</label>
-          <label><input type="checkbox" name="keywords" value="Keyword 3"> Keyword 3</label>
+        <button
+          class="btn btn-light"
+          data-bs-toggle="offcanvas"
+          data-bs-target="#currentSuggestions"
+          title="Current Suggestions"
+        >
+          <i class="bi bi-crosshair"></i>
+        </button>
+
+        <button
+          class="btn btn-light"
+          data-bs-toggle="offcanvas"
+          data-bs-target="#helpPanel"
+          title="Help"
+        >
+          <i class="bi bi-question-circle-fill"></i>
+        </button>
+      </div>
+
+      <!-- ================= CONTROL PANEL ================= -->
+      <div
+        class="offcanvas offcanvas-end text-bg-dark"
+        tabindex="-1"
+        id="controlPanel"
+      >
+        <div class="offcanvas-header">
+          <h5 class="offcanvas-title">Control Panel</h5>
+          <button
+            class="btn-close btn-close-white"
+            data-bs-dismiss="offcanvas"
+          ></button>
+        </div>
+
+        <div class="offcanvas-body d-flex flex-column gap-3">
+          <div class="d-flex gap-2">
+            <button
+              class="btn btn-outline-danger w-100"
+              onclick="clearMarkers()"
+            >
+              Clear
+            </button>
+            <button class="btn btn-outline-primary w-100">
+              Send & Confirm
+            </button>
+          </div>
+
+          <button class="btn btn-info" onclick="jsonDownload()">
+            Download Suggestions Locally
+          </button>
+          <input type="file" class="form-control" accept=".json" />
+          <button class="btn btn-secondary" onclick="jsonUpload()">
+            Show Local Suggestions
+          </button>
+
+          <div class="form-check">
+            <input
+              class="form-check-input"
+              type="checkbox"
+              onclick="coordGrid()"
+              id="grid"
+            />
+            <label class="form-check-label" for="grid"
+              >Coordinate Gridlines</label
+            >
+          </div>
+
+          <div class="form-check">
+            <input
+              class="form-check-input"
+              type="checkbox"
+              checked
+              onclick="markerShow()"
+              id="markers"
+            />
+            <label class="form-check-label" for="markers"
+              >Show Suggestions</label
+            >
+          </div>
+
+          <hr class="border-secondary" />
+
+          <small class="text-secondary">
+            <strong>Controls</strong><br />
+            Double Click – Place Marker<br />
+            Shift + Click – Draw Patch<br />
+            Right Click – Pan<br />
+            W / H / E – FoV Modes
+          </small>
         </div>
       </div>
+
+      <!-- ================= CURRENT SUGGESTIONS ================= -->
+      <div
+        class="offcanvas offcanvas-end text-bg-dark"
+        tabindex="-1"
+        id="currentSuggestions"
+      >
+        <div class="offcanvas-header">
+          <h5 class="offcanvas-title">Current Suggestions</h5>
+          <button
+            class="btn-close btn-close-white"
+            data-bs-dismiss="offcanvas"
+          ></button>
         </div>
-        <label><input type="text" id="selectedKeywords" name="selectedKeywords" style = 'width: 100%'readonly/></label>
 
-      <label>Other Notes:<textarea name="notes"></textarea></label>
-
-      <div class="popup-buttons">
-        <button type="submit">Save</button>
-        <button type="button" onclick="cancelPopup()">Cancel</button>
+        <div class="offcanvas-body p-0">
+          <div id="markerList" class="list-group list-group-flush"></div>
+        </div>
       </div>
-    </form>
-  </div>
-</div>
 
+      <!-- ================= HELP ================= -->
+      <div
+        class="offcanvas offcanvas-end text-bg-dark"
+        tabindex="-1"
+        id="helpPanel"
+      >
+        <div class="offcanvas-header">
+          <h5 class="offcanvas-title">Welcome to PASTI</h5>
+          <button
+            class="btn-close btn-close-white"
+            data-bs-dismiss="offcanvas"
+          ></button>
+        </div>
 
+        <div class="offcanvas-body">
+          <p>Pasti is a …</p>
+          <img
+            src="PlaceHolderData/PanCamLogo.png"
+            class="img-fluid"
+            alt="PanCam Logo"
+          />
+        </div>
+      </div>
+    </div>
+    <!-- ================= MARKER MODAL ================= -->
+<div class="modal fade" id="markerModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Suggestion Form</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
 
+      <div class="modal-body">
+        <form id="markerForm" class="d-flex flex-column gap-3">
+          <input name="title" class="form-control" placeholder="Title" />
+          <textarea name="description" class="form-control" placeholder="Description"></textarea>
+
+          <div class="form-check">
+          <input class="form-check-input" type="checkbox" id="imageCheck" name="HRC" value="1" />
+          <label class="form-check-label" for="hrcCheck">HRC</label></div>
+
+          <div class="form-check">
+          <input class="form-check-input" type="checkbox" id="wacCheck" name="WAC" value="1" />
+          <label class="form-check-label" for="wacCheck">WAC</label></div>
+
+          <div class="form-check">
+          <input class="form-check-input" type="checkbox" id="enfysCheck" name="Enfys" value="1" />
+          <label class="form-check-label" for="enfysCheck">Enfys</label></div>
+
+          <div class="dropdown">
+            <button class="btn btn-outline-secondary dropdown-toggle" data-bs-toggle="dropdown">
+              Select Keywords
+            </button>
             
-<div id="tooltip" style="display:none; position: fixed; pointer-events:none; background:white; border:1px solid black; padding:5px; z-index:2000; overflow-wrap: break-word; max-width:30vw; font-size: 1vw;"></div>
+            <ul class="dropdown-menu p-2">
+              <li>
+                <label class="dropdown-item">
+                  <input class="form-check-input me-2" type="checkbox" name="keywords" value="Keyword 1" />Keyword 1
+                </label>
+              </li>
+              <li>
+                <label class="dropdown-item">
+                  <input class="form-check-input me-2" type="checkbox" name="keywords" value="Keyword 2" />Keyword 2
+                </label>
+              </li>
+              <li>
+                <label class="dropdown-item">
+                  <input class="form-check-input me-2" type="checkbox" name="keywords" value="Keyword 3" />Keyword 3
+                </label>
+              </li>
+            </ul>
+          </div>
 
+          <div class="modal-footer">
+            <button type="submit" class="btn btn-primary" id="submitSuggestionBtn">Submit</button>
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
 
+    <!-- ================= Sol Select Modal ================= -->
+    <div class="modal fade" id="daySelectorModal" tabindex="-1">
+      <div
+        class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable"
+      >
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title">Select Sol</h5>
+            <button class="btn-close" data-bs-dismiss="modal"></button>
+          </div>
 
+          <!-- FORM WRAP START -->
+          <form id="solForm">
+ 
 
-<!-- Three.js core -->
-<script src="https://unpkg.com/three@0.128.0/build/three.min.js"></script>
-<!-- OrbitControls -->
-<script src="https://unpkg.com/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+              <div class="mb-3">
+                <label for="solSelect" class="form-label"></label>
+                <select class="form-select" id="solSelect">
+                  <option value="">-- Choose a Sol --</option>
+                </select>
+              </div>
 
-<!-- Gather Data -->
-<script src="js_scripts2/Coords.js"></script>
+              <div id="thumbnailContainer" class="d-flex flex-wrap gap-2">
+                <!-- Thumbnails will load here dynamically -->
+              </div>
 
-<!-- Graphical Setup Script-->
-<script src="js_scripts2/GraphicalSetup.js"></script>
+            <div class="modal-footer">
+              <button id = "confirmSolBtn" type="button" class="btn btn-primary">Save</button>
+              <button
+                type="button"
+                class="btn btn-secondary"
+                data-bs-dismiss="modal"
+              >
+                Cancel
+              </button>
+            </div>
+              <!-- any other input fields -->
+            </div>
 
-<!-- Texture Loader Script-->
-<script src="js_scripts2/TextureLoad.js"></script>
+          </form>
+          <!-- FORM WRAP END -->
+        </div>
+      </div>
+    </div>
+    <!-- MARKER TOOLTIP-->
+    <div
+  id="markerTooltip"
+  style="
+    position: fixed;
+    pointer-events: none;
+    background: rgba(0,0,0,0.8);
+    color: white;
+    padding: 6px 10px;
+    border-radius: 6px;
+    font-size: 12px;
+    display: none;
+    z-index: 3000;
+  "
+></div>
+    <!-- MARKER LIST-->
+<div id="markerList" class="list-group small"></div>
+    <!-- ================= SCRIPTS ================= -->
 
-<!-- Marker Placing Script-->
-<script src="js_scripts2/MarkerPlacement.js"></script>
+    <!-- Three.js -->
+    <script src="https://unpkg.com/three@0.128.0/build/three.min.js"></script>
+    <script src="https://unpkg.com/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
 
-<!-- PopupForm Script-->
-<script src="js_scripts2/PopupForms.js"></script>
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 
-<!-- Key Press Script-->
-<script src="js_scripts2/KeyPressFunctions.js"></script>
+    <!-- Bootstrap tooltips init -->
+    <script>
+      document.querySelectorAll("[title]").forEach((el) => {
+        new bootstrap.Tooltip(el);
+      });
+    </script>
+    <!-- Init Scripts -->
+    <script>
+      const raycaster = new THREE.Raycaster();
+      const mouse = new THREE.Vector2();
+      const container = document.getElementById("threejs-canvas");
+      const renderer = new THREE.WebGLRenderer({ antialias: true });
+      var w = innerWidth / 1.5,
+        h = innerHeight / 1.5;
+      const rect = renderer.domElement.getBoundingClientRect();
+      renderer.domElement.tabIndex = 0;
+      renderer.domElement.style.outline = "none";
+      renderer.domElement.focus();
+      //const markerColor = '#' + Math.floor(Math.random() * 16777215).toString(16).padStart(6, '0');
+      const markerColor = "#" + "40be9b";
 
-<!-- json Handler Script-->
-<script src="js_scripts2/jsonHandler.js"></script>
+      // Listen for resize events
+function onWindowResize() {
+  const width = window.innerWidth;
+  const height = window.innerHeight;
 
-<!-- Miscelleanous Functions Script-->
-<script src="js_scripts2/MiscFunctions.js"></script>
+  camera.aspect = width / height;
+  camera.updateProjectionMatrix();
 
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI" crossorigin="anonymous"></script>
-
-
-
-
-
-<script>
-// Initial variables required before anything else can take place.
-const raycaster = new THREE.Raycaster();
-const mouse = new THREE.Vector2();
-let markers = [];
-let meshes = [];
-var w = innerWidth / 1.5, h = innerHeight / 1.5;
-const rect = renderer.domElement.getBoundingClientRect();
-renderer.domElement.tabIndex = 0;
-renderer.domElement.style.outline = "none";
-renderer.domElement.focus();
-//const markerColor = '#' + Math.floor(Math.random() * 16777215).toString(16).padStart(6, '0');
-const markerColor = '#'+'40be9b'
-
-// Listen for resize events
-
-window.addEventListener('resize', onWindowResize, false);
-const threejsContainer = document.getElementById('threejs-container');
-threejsContainer.insertBefore(hud, threejsContainer.firstChild);
-//const markerColor  = 0xffff00
-
-function toggleSidebar(num) {
-  const sidebar = document.getElementById(`mySidebar${num}`);
-  const openbtn = document.getElementById(`openBtn${num}`);
-  const isOpen = sidebar.style.transform === "translateY(60vh)";
-
-  //openbtn.innerHTML = isOpen? '<':'>';
-  sidebar.style.transform = isOpen ? "translateY(0)" : "translateY(60vh)";
+  renderer.setSize(container.clientWidth, container.clientHeight);
+  renderer.setPixelRatio(window.devicePixelRatio);
 }
 
-function closeSidebar(num) {
-  const sidebar = document.getElementById(`mySidebar${num}`);
-  const openbtn = document.getElementById(`openBtn${num}`);
-  sidebar.style.transform = 'translateY(100vh)';
+      window.addEventListener("resize", onWindowResize, false);
+      const threejsContainer = document.getElementById("threejs-container");
+      threejsContainer.insertBefore(
+        document.getElementById("threejs-canvas"),
+        threejsContainer.firstChild,
+      );
 
-  const isOpen = sidebar.style.transform === "translateY(60vh)";
-  //openbtn.innerHTML = isOpen? '<':'>';
+      function animate() {
+        requestAnimationFrame(animate);
+        controls.update();
+        updateCameraRulers();
+        renderer.render(scene, camera);
+      }
+    </script>
 
-}
-
-const tooltip = document.getElementById('buttontooltip');
-const buttons = [
-  { el: document.getElementById('openBtn1'), text: 'Control Panel' },
-  { el: document.getElementById('openBtn2'), text: 'Current Suggestions' },
-  { el: document.getElementById('openBtn3'), text: 'TBD' },
-];
-
-
-buttons.forEach(btn => {
-  btn.el.addEventListener('mouseenter', (e) => {
-    tooltip.innerText = btn.text;
-    tooltip.style.display = 'block';
-
-
-    tooltip.style.left = e.pageX - 40  + 'px';
     
-    tooltip.style.top = e.pageY -40 + 'px';
+    <!-- Your scripts -->
+    <script src="js_scripts/GraphicalSetup.js"></script>
 
-  });
 
-  btn.el.addEventListener('mousemove', (e) => {
+    <script src="js_scripts/KeyPressFunctions.js"></script>
+    <script src="js_scripts/jsonHandler.js"></script>
+    <script src="js_scripts/PopupForms.js"></script>
+        <script src="js_scripts/TextureLoad.js"></script>
+    <script src="js_scripts/Coords.js"></script>
+    <script src="js_scripts/MiscFunctions.js"></script>
 
-    tooltip.style.left = e.pageX -40 + 'px';
-    tooltip.style.top = e.pageY - 40 + 'px';
-  });
-
-  btn.el.addEventListener('mouseleave', () => {
-    tooltip.style.display = 'none';
-  });
-});
-
-function animate() {
-    requestAnimationFrame(animate);
-    controls.update();
-    updateCameraRulers();
-    renderer.render(scene, camera);
-  }
-
-const popup = document.getElementById("popupForm");
-const header = document.getElementById("popupHeader");
-
-let offsetX = 0, offsetY = 0;
-let isDragging = false;
-  header.addEventListener("mousedown", (e) => {
-  isDragging = true;
-  // Mouse position relative to popup top-left corner
-  offsetX = e.clientX - popup.offsetLeft;
-  offsetY = e.clientY - popup.offsetTop;
-  document.body.style.userSelect = "none"; // prevent text selection while dragging
-});
-
-document.addEventListener("mouseup", () => {
-  isDragging = false;
-  document.body.style.userSelect = ""; // restore
-});
-
-document.addEventListener("mousemove", (e) => {
-  if (!isDragging) return;
-  // Calculate new position
-  let left = e.clientX - offsetX;
-  let top = e.clientY - offsetY;
-
-  // Optional: constrain within viewport
-  const maxLeft = window.innerWidth - popup.offsetWidth;
-  const maxTop = window.innerHeight - popup.offsetHeight;
-  left = Math.max(0, Math.min(left, maxLeft));
-  top = Math.max(0, Math.min(top, maxTop));
-
-  popup.style.left = left + "px";
-  popup.style.top = top + "px";
-});
-
-document.addEventListener('DOMContentLoaded', () => {
-  const btn = document.getElementById('keywordDropdownBtn');
-  const dropdown = document.getElementById('keywordDropdown');
-  const input = document.getElementById('selectedKeywords');
-
-  // Toggle dropdown visibility
-  btn.addEventListener('click', () => {
-    dropdown.style.display = dropdown.style.display === 'block' ? 'none' : 'block';
-  });
-
-  // Close dropdown if clicked outside
-  document.addEventListener('click', (e) => {
-    if (!dropdown.contains(e.target) && e.target !== btn) {
-      dropdown.style.display = 'none';
-    }
-  });
-
-  // Update input when checkboxes change
-  dropdown.querySelectorAll('input[type="checkbox"]').forEach(cb => {
-    cb.addEventListener('change', () => {
-      const selected = Array.from(dropdown.querySelectorAll('input[type="checkbox"]:checked'))
-                           .map(c => c.value);
-      input.value = selected.join(', ');
-    });
-  });
-});
-  </script>
-
-</body>
+  </body>
 </html>

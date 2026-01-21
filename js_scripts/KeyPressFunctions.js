@@ -8,6 +8,7 @@ let enfysPreview = null;
 let ePressed = false;
 
 function onMouseMove1(event) {
+  //WAC Preview loader
   const rect = renderer.domElement.getBoundingClientRect();
   mouse.x = ((event.clientX - rect.left) / rect.width) * 2 - 1;
   mouse.y = -((event.clientY - rect.top) / rect.height) * 2 + 1;
@@ -17,8 +18,6 @@ function onMouseMove1(event) {
 
   if (intersects.length > 0) {
     const intersectPoint = intersects[0].point.clone();
-
-    // Convert intersection point to spherical coordinates
     const spherical = new THREE.Spherical();
     spherical.setFromVector3(intersectPoint);
 
@@ -29,7 +28,7 @@ function onMouseMove1(event) {
       wacPreview = null;
     }
 
-    const wacangle = 38.3/2 * (Math.PI / 180);
+    const wacangle = (38.3 / 2) * (Math.PI / 180);
 
     wacPreview = new THREE.Mesh(
       new THREE.SphereGeometry(
@@ -39,7 +38,7 @@ function onMouseMove1(event) {
         spherical.theta + Math.PI / 2 - wacangle,
         wacangle * 2,
         spherical.phi - wacangle,
-        wacangle * 2
+        wacangle * 2,
       ),
       new THREE.MeshBasicMaterial({
         color: 0xffffff,
@@ -47,14 +46,16 @@ function onMouseMove1(event) {
         opacity: 0.4,
         side: THREE.BackSide,
         depthTest: false,
-      }))
+      }),
+    );
 
     wacPreview.position.set(0, 0, 0);
     scene.add(wacPreview);
-  
   }
 }
+
 function onMouseMove2(event) {
+  // hrc preview Loader
   const rect = renderer.domElement.getBoundingClientRect();
   mouse.x = ((event.clientX - rect.left) / rect.width) * 2 - 1;
   mouse.y = -((event.clientY - rect.top) / rect.height) * 2 + 1;
@@ -65,8 +66,6 @@ function onMouseMove2(event) {
 
   if (intersects.length > 0) {
     const intersectPoint = intersects[0].point.clone();
-
-    // Convert intersection point to spherical coordinates
     const spherical = new THREE.Spherical();
     spherical.setFromVector3(intersectPoint);
 
@@ -77,7 +76,7 @@ function onMouseMove2(event) {
       hrcPreview = null;
     }
 
-    const hrcangle = 4.88/2 * (Math.PI / 180);
+    const hrcangle = (4.88 / 2) * (Math.PI / 180);
 
     hrcPreview = new THREE.Mesh(
       new THREE.SphereGeometry(
@@ -87,7 +86,7 @@ function onMouseMove2(event) {
         spherical.theta + Math.PI / 2 - hrcangle,
         hrcangle * 2,
         spherical.phi - hrcangle,
-        hrcangle * 2
+        hrcangle * 2,
       ),
       new THREE.MeshBasicMaterial({
         color: 0x0000ff,
@@ -95,15 +94,16 @@ function onMouseMove2(event) {
         opacity: 0.4,
         side: THREE.BackSide,
         depthTest: false,
-      }))
+      }),
+    );
 
     hrcPreview.position.set(0, 0, 0);
     scene.add(hrcPreview);
-  
   }
 }
 
 function onMouseMove3(event) {
+  // enfys preview loader
   const rect = renderer.domElement.getBoundingClientRect();
   mouse.x = ((event.clientX - rect.left) / rect.width) * 2 - 1;
   mouse.y = -((event.clientY - rect.top) / rect.height) * 2 + 1;
@@ -114,8 +114,6 @@ function onMouseMove3(event) {
 
   if (intersects.length > 0) {
     const intersectPoint = intersects[0].point.clone();
-
-    // Convert intersection point to spherical coordinates
     const spherical = new THREE.Spherical();
     spherical.setFromVector3(intersectPoint);
 
@@ -136,15 +134,15 @@ function onMouseMove3(event) {
         spherical.theta + Math.PI / 2 - enfysangle,
         enfysangle * 2,
         spherical.phi - enfysangle,
-        enfysangle * 2
+        enfysangle * 2,
       ),
       new THREE.MeshBasicMaterial({
-        color: 0x00FF00,
+        color: 0x00ff00,
         transparent: true,
         opacity: 0.4,
         side: THREE.BackSide,
         depthTest: false,
-      })
+      }),
     );
 
     enfysPreview.position.set(0, 0, 0);
@@ -152,16 +150,16 @@ function onMouseMove3(event) {
   }
 }
 
-
 function onKeyDownWac(event) {
-  if (event.key === "w" && !wPressed) {
+  //finds key down for wac
+  if (event.key.toLowerCase() === "w" && !wPressed) {
     wPressed = true;
     renderer.domElement.addEventListener("mousemove", onMouseMove1);
   }
 }
 
 function onKeyUpWac(event) {
-  if (event.key === "w") {
+  if (event.key.toLowerCase() === "w") {
     wPressed = false;
     renderer.domElement.removeEventListener("mousemove", onMouseMove1);
 
@@ -174,16 +172,16 @@ function onKeyUpWac(event) {
   }
 }
 
-
 function onKeyDownHrc(event) {
-  if (event.key === "h" && !hPressed) {
+  // finds key down for hrc
+  if (event.key.toLowerCase() === "h" && !hPressed) {
     hPressed = true;
     renderer.domElement.addEventListener("mousemove", onMouseMove2);
   }
 }
 
 function onKeyUpHrc(event) {
-  if (event.key === "h") {
+  if (event.key.toLowerCase() === "h") {
     hPressed = false;
     renderer.domElement.removeEventListener("mousemove", onMouseMove2);
 
@@ -197,14 +195,15 @@ function onKeyUpHrc(event) {
 }
 
 function onKeyDownEnfys(event) {
-  if (event.key === "e" && !ePressed) {
+  //finds key down for enfys
+  if (event.key.toLowerCase() === "e" && !ePressed) {
     ePressed = true;
     renderer.domElement.addEventListener("mousemove", onMouseMove3);
   }
 }
 
 function onKeyUpEnfys(event) {
-  if (event.key === "e") {
+  if (event.key.toLowerCase() === "e") {
     ePressed = false;
     renderer.domElement.removeEventListener("mousemove", onMouseMove3);
 
@@ -217,6 +216,7 @@ function onKeyUpEnfys(event) {
   }
 }
 
+//listener for fov previews
 window.addEventListener("keydown", onKeyDownWac);
 window.addEventListener("keyup", onKeyUpWac);
 
